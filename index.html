@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Blue 5 Game Project</title>
+        <style>
+            body {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                background-color: #21143d;
+                margin: 0;
+                gap: 20px;
+            }
+            .controls-container {
+                padding-bottom: 20px;
+                display: flex;
+                gap: 20px;
+                align-items: center;
+                color: white;
+            }
+            .control-group {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="display: grid; grid-template-areas: 'overlap'; contain: paint">
+            <canvas
+                id="gameWorld"
+                width="1719"
+                height="951"
+                style="background: white; grid-area: overlap"
+                tabindex="0"
+                autofocus
+            >
+            </canvas>
+            <div
+                style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    grid-area: overlap;
+                    color: white;
+                    pointer-events: none;
+                "
+            >
+                <!-- GUI -->
+            </div>
+        </div>
+    </body>
+
+    <!-- Game Engine Types -->
+    <script type="text/javascript" src="./src/engine/util.js"></script>
+    <script type="text/javascript" src="./src/engine/types/vector.js"></script>
+    <script type="text/javascript" src="./src/engine/types/instance-vector.js"></script>
+    <script type="text/javascript" src="./src/engine/types/boundary.js"></script>
+    <script type="text/javascript" src="./src/engine/types/input-events.js"></script>
+    <script type="text/javascript" src="./src/engine/types/game-object.js"></script>
+    <script type="text/javascript" src="./src/engine/types/scene.js"></script>
+    <script type="text/javascript" src="./src/engine/types/spritesheet.js"></script>
+
+    <!-- Game Engine -->
+    <script type="text/javascript" src="./src/engine/gameengine.js"></script>
+    <script type="text/javascript" src="./src/engine/assetmanager.js"></script>
+
+    <!-- Components -->
+    <script type="text/javascript" src="./src/engine/components/point.js"></script>
+    <script type="text/javascript" src="./src/engine/components/sprite.js"></script>
+    <script type="text/javascript" src="./src/engine/components/collider-rect.js"></script>
+    <script type="text/javascript" src="./src/engine/components/physics-entity.js"></script>
+    <script
+        type="text/javascript"
+        src="./src/engine/components/falling-player-controller.js"
+    ></script>
+
+    <!-- Default Game Objects -->
+    <script type="text/javascript" src="./src/game-objects/interpolated-camera.js"></script>
+
+    <!-- Game Content -->
+    <script type="text/javascript" src="./src/obstacle.js"></script>
+    <script type="text/javascript" src="./src/player.js"></script>
+    <script type="text/javascript" src="./src/main.js"></script>
+</html>
