@@ -1,1 +1,1 @@
-# Blue 5 Game Project
+# Hai's Minigame Project
