@@ -102,6 +102,10 @@ class Player extends GameObject {
                 .multiply(5);
             this.controller.velocity.add(difference);
         }
+        if (events.scroll) {
+            const sceneNumber = events.scroll > 0 ? 1 : 2;
+            GameEngine.setScene(`scene${sceneNumber}`);
+        }
 
         let offset = new Vector();
 

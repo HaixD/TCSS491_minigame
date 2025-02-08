@@ -111,6 +111,10 @@ class GameEngine {
      * @param {String} key
      */
     static setScene(key) {
+        if (!(key in this.#scenes)) {
+            throw new Error("Scene does not exist");
+        }
+
         GameEngine.#activeScene = key;
         ColliderRect.setContext(key);
     }

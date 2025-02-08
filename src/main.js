@@ -68,22 +68,13 @@ async function main() {
     // set up scene #2
     GameEngine.createScene("scene2", scene => {
         const player = new Player(new InstanceVector());
-        const camera = new InterpolatedCamera(
-            player.position,
-            5,
-            0,
-            new Vector(-canvas.width / 2, -canvas.height / 2).add(
-                player.getBoundary().asShape().multiply(0.5)
-            )
-        );
 
-        scene.setOffset(camera.position);
+        scene.setOffset(new InstanceVector(-700, -735));
         scene.addLayer("FAKE_LAYER");
         scene.addLayer("back");
         scene.addLayer("middle");
         scene.addLayer("front");
 
-        scene.addGameObject("FAKE_LAYER", camera);
         scene.addGameObject(
             "front",
             new Obstacle(new InstanceVector(1000, -800), new Vector(20, 1000))
@@ -98,10 +89,6 @@ async function main() {
         );
         scene.addGameObject("back", player);
     });
-
-    setTimeout(() => {
-        GameEngine.setScene("scene2");
-    }, 1000);
 
     // start
     GameEngine.start();
