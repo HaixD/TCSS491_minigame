@@ -21,6 +21,10 @@ function isDirectionalCounter(a, b) {
     return Boolean(getDirection(a) && getDirection(b)) && getDirection(a) !== getDirection(b);
 }
 
+function isBetween(value, a, b) {
+    return a <= value && value <= b;
+}
+
 /**
  *
  * @param {CanvasRenderingContext2D} ctx

@@ -22,6 +22,10 @@ class Boundary {
         );
     }
 
+    asShape() {
+        return new Vector(this.right - this.left, this.bottom - this.top);
+    }
+
     /**
      *
      * @param {Vector | InstanceVector} other

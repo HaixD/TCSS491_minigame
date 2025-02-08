@@ -21,16 +21,10 @@ class PhysicsEntity {
      * @returns displacement
      */
     updateVelocity(deltaTime) {
+        const initialVelocity = this.velocity.asVector().map(Math.abs);
+
         // apply acceleration
         this.velocity.add(this.acceleration.multiply(deltaTime));
-        this.velocity.x = Math.max(
-            Math.min(this.velocity.x, this.terminalVelocity.x),
-            -this.terminalVelocity.x
-        );
-        this.velocity.y = Math.max(
-            Math.min(this.velocity.y, this.terminalVelocity.y),
-            -this.terminalVelocity.y
-        );
 
         const intermediateVelocity = this.velocity.asVector();
 
@@ -48,45 +42,26 @@ class PhysicsEntity {
             }
         }
 
+        // apply terminal velocity
+        const currentVelocity = this.velocity.map(Math.abs);
+        if (isBetween(this.terminalVelocity.x, initialVelocity.x, currentVelocity.x)) {
+            this.velocity.x = Math.max(
+                Math.min(this.velocity.x, this.terminalVelocity.x),
+                -this.terminalVelocity.x
+            );
+        }
+        if ((isBetween(this.terminalVelocity.y), initialVelocity.y, currentVelocity.y)) {
+            this.velocity.y = Math.max(
+                Math.min(this.velocity.y, this.terminalVelocity.y),
+                -this.terminalVelocity.y
+            );
+        }
+
         // reset temporary states
         this.acceleration.set(0, 0);
         this.#counterAcceleration.set(0, 0);
 
         return this.velocity.asVector().multiply(deltaTime);
-    }
-
-    /**
-     * Overrides the current velocity
-     * @param {Vector | InstanceVector | number} arg1
-     * @param {number | undefined} arg2
-     */
-    overrideVelocity(arg1, arg2) {
-        this.velocity.set(arg1, arg2);
-    }
-
-    /**
-     * Overrides the current velocity
-     * @param {Vector | InstanceVector | number} arg1
-     * @param {number | undefined} arg2
-     */
-    setTerminalVelocity(arg1, arg2) {
-        this.terminalVelocity = new Vector(arg1, arg2);
-    }
-
-    /**
-     * Overrides the horizontal velocity
-     * @param {number} velocity
-     */
-    overrideXVelocity(velocity) {
-        this.velocity.x = velocity;
-    }
-
-    /**
-     * Overrides the vertical velocity
-     * @param {number} velocity
-     */
-    overrideYVelocity(velocity) {
-        this.velocity.y = velocity;
     }
 
     /**

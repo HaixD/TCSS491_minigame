@@ -72,8 +72,27 @@ class GameEngine {
      * @param {Scene} scene
      */
     static addScene(key, scene) {
+        ColliderRect.addContext(key);
         GameEngine.#scenes[key] = scene;
         GameEngine.#activeScene ||= key;
+    }
+
+    /**
+     * Creates a scene object and ColliderRect context to go with that scene
+     * @param {string} key
+     * @param {(scene: Scene) => void} callback
+     */
+    static createScene(key, callback) {
+        if (GameEngine.#ctx === null) {
+            throw new Error("GameEngine not initialized");
+        }
+
+        const scene = new Scene(GameEngine.#ctx);
+        GameEngine.addScene(key, scene);
+
+        callback(scene);
+
+        ColliderRect.setContext(GameEngine.#activeScene);
     }
 
     /**
@@ -93,6 +112,7 @@ class GameEngine {
      */
     static setScene(key) {
         GameEngine.#activeScene = key;
+        ColliderRect.setContext(key);
     }
 
     /**

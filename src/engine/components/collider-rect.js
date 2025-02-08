@@ -4,17 +4,20 @@
 /** @typedef {import("../types/game-object")} */
 /** @typedef {import("../types/component")} */
 
+/** @typedef {{nextColliderID: number, colliders: {[key: string]: ColliderRect}}} ColliderContext */
+
 /**
  * ColliderRect exists to detect and resolve collisions between 2 or more rectangles
  *
  * NOTE: for "perfect fit" scenarios, ensure there is between [1, 0) unit of space (things will appear to be a perfect fit)
  */
 class ColliderRect {
-    static #nextColliderID = 0;
+    /** @type {{[context: string]: ColliderContext}}} */
+    static #contexts = {};
+    static #activeContext = "";
 
     #colliderID;
-    /** @type {{[key: string]: ColliderRect}} */
-    static #colliders = {};
+    #context;
 
     /**
      * @param {GameObject} parent
@@ -30,12 +33,41 @@ class ColliderRect {
         this.shape = shape;
         this.collisionTargets = new Set(collisionTargets);
 
-        this.#colliderID = ColliderRect.#nextColliderID++;
-        ColliderRect.#colliders[this.#colliderID] = this;
+        if (ColliderRect.#activeContext === "") {
+            throw new Error("No active context set");
+        }
+        this.#context = ColliderRect.#contexts[ColliderRect.#activeContext];
+
+        this.#colliderID = this.#context.nextColliderID++;
+        this.#context.colliders[this.#colliderID] = this;
+    }
+
+    /**
+     * Adds a context under the given key and sets the active context to that key
+     *
+     * Note: this function should only be used by the game engine, only use to override default behavior
+     * @param {string} key
+     */
+    static addContext(key) {
+        ColliderRect.#contexts[key] = { nextColliderID: 0, colliders: {} };
+        ColliderRect.setContext(key);
+    }
+
+    /**
+     * Sets the active context to the given key
+     *
+     * Note: this function should only be used by the game engine, only use to override default behavior
+     * @param {string} key
+     */
+    static setContext(key) {
+        if (!(key in ColliderRect.#contexts)) {
+            throw new Error("Context does not exist");
+        }
+        ColliderRect.#activeContext = key;
     }
 
     delete() {
-        delete ColliderRect.#colliders[this.#colliderID];
+        delete this.#context.colliders[this.#colliderID];
     }
 
     /**
@@ -43,7 +75,7 @@ class ColliderRect {
      * @returns The ColliderRect object which collides with this one
      */
     *getCollisions() {
-        for (const collider of Object.values(ColliderRect.#colliders)) {
+        for (const collider of Object.values(this.#context.colliders)) {
             if (collider.parent.delete) {
                 collider.delete();
                 continue;
@@ -57,8 +89,6 @@ class ColliderRect {
                 yield collider;
             }
         }
-
-        return null;
     }
 
     /**
@@ -160,10 +190,7 @@ class ColliderRect {
 
         while (true) {
             const { value: collider, done } = collisions.next();
-
-            if (done) {
-                break;
-            }
+            if (done) break;
 
             neededDisplacement = neededDisplacement.add(
                 this.resolveCollision(displacement, collider)
