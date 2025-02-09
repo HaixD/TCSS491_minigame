@@ -5,7 +5,7 @@
 - make camera only follow player horizontally (fixed vertical position)
 - dummy enemy (no ai, just takes damage)
 - fix documentation
-- test player snap up and down
+- player snap up and down
 # Long-Term Todos
 - attack (skills, combos), dodge, and parry system
 - ensure game works with higher quality assets
