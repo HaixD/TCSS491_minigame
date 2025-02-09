@@ -19,6 +19,8 @@ class FallingPlayerController extends PhysicsEntity {
      * @param {number} airReverseAcceleration extra acceleration when going in opposite direction of horizontal (in air)
      * @param {number} stoppingAcceleration deacceleration applied when there is no target direction
      * @param {number} airStoppingAcceleration deacceleration applied when there is no target direction in the air
+     * @param {number} returningAcceleration
+     * @param {number} airReturningAcceleration
      * @param {number} gravitationalAcceleration constant downwards acceleration
      * @param {number} jumpAcceleration upwards acceleration applied when holding jump (to counter gravity)
      * @param {number} jumpVelocity immediate velocity applied when jumping
@@ -31,6 +33,8 @@ class FallingPlayerController extends PhysicsEntity {
         airReverseAcceleration,
         stoppingAcceleration,
         airStoppingAcceleration,
+        returningAcceleration,
+        airReturningAcceleration,
         gravitationalAcceleration,
         jumpAcceleration,
         jumpVelocity
@@ -43,6 +47,8 @@ class FallingPlayerController extends PhysicsEntity {
         this.airReverseAcceleration = airReverseAcceleration;
         this.stoppingAcceleration = stoppingAcceleration;
         this.airStoppingAcceleration = airStoppingAcceleration;
+        this.returningAcceleration = returningAcceleration;
+        this.airReturningAcceleration = airReturningAcceleration;
         this.gravitationalAcceleration = gravitationalAcceleration;
         this.jumpAcceleration = jumpAcceleration;
         this.jumpVelocity = jumpVelocity;
@@ -60,8 +66,10 @@ class FallingPlayerController extends PhysicsEntity {
 
         if (grounded) {
             this.applyAcceleration(new Vector(xDirection * this.horizontalAcceleration));
+            this.applyTerminalAcceleration(new Vector(this.returningAcceleration));
         } else {
             this.applyAcceleration(new Vector(xDirection * this.airHorizontalAcceleration));
+            this.applyTerminalAcceleration(new Vector(this.airReturningAcceleration));
         }
         if (isDirectionalCounter(xDirection, this.velocity.x)) {
             if (grounded) {
@@ -87,8 +95,11 @@ class FallingPlayerController extends PhysicsEntity {
      */
     updateVertical(jumping, grounded) {
         this.applyAcceleration(new Vector(0, this.gravitationalAcceleration));
+
         if (this.#jumping) {
             this.applyAcceleration(new Vector(0, this.#jumping * -this.jumpAcceleration));
+        } else if (!grounded && this.velocity.y > 0) {
+            this.applyTerminalAcceleration(new Vector(0, this.airReturningAcceleration));
         }
 
         if (grounded && this.velocity.y > 0) {

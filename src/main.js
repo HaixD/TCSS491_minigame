@@ -38,29 +38,33 @@ async function main() {
         scene.addGameObject("FAKE_LAYER", camera);
         scene.addGameObject(
             "front",
-            new Obstacle(new InstanceVector(1000, -800), new Vector(20, 1000))
+            new Obstacle(new InstanceVector(1000, -1000), new Vector(20, 1200))
         );
         scene.addGameObject(
             "front",
-            new Obstacle(new InstanceVector(-1000, -800), new Vector(20, 1000))
+            new Obstacle(new InstanceVector(-1000, -1000), new Vector(20, 1200))
         );
         scene.addGameObject("front", new Obstacle(new InstanceVector(0, 100), new Vector(50, 50)));
         scene.addGameObject("front", new Obstacle(new InstanceVector(-50, 0), new Vector(50, 50)));
         scene.addGameObject(
             "front",
-            new Obstacle(new InstanceVector(-900, 190), new Vector(50, 10))
+            new Obstacle(new InstanceVector(-920, 160), new Vector(40, 40))
         );
         scene.addGameObject(
             "front",
-            new Obstacle(new InstanceVector(-950, 180), new Vector(50, 10))
+            new Obstacle(new InstanceVector(-960, 120), new Vector(40, 40))
         );
         scene.addGameObject(
             "front",
-            new Obstacle(new InstanceVector(-1000, 170), new Vector(50, 10))
+            new Obstacle(new InstanceVector(-1000, 80), new Vector(40, 40))
         );
         scene.addGameObject(
             "front",
             new Obstacle(new InstanceVector(-2000, 200), new Vector(4000, 20))
+        );
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-2000, -1000), new Vector(4000, 20))
         );
         scene.addGameObject("back", player);
     });
@@ -68,25 +72,26 @@ async function main() {
     // set up scene #2
     GameEngine.createScene("scene2", scene => {
         const player = new Player(new InstanceVector());
+        const camera = new InterpolatedCamera(
+            player.position,
+            5,
+            0,
+            new Vector(-canvas.width / 2, -canvas.height / 2).add(
+                player.getBoundary().asShape().multiply(0.5)
+            )
+        );
 
-        scene.setOffset(new InstanceVector(-700, -735));
+        scene.setOffset(camera.position);
         scene.addLayer("FAKE_LAYER");
         scene.addLayer("back");
         scene.addLayer("middle");
         scene.addLayer("front");
 
-        scene.addGameObject(
-            "front",
-            new Obstacle(new InstanceVector(1000, -800), new Vector(20, 1000))
-        );
-        scene.addGameObject(
-            "front",
-            new Obstacle(new InstanceVector(-1000, -800), new Vector(20, 1000))
-        );
-        scene.addGameObject(
-            "front",
-            new Obstacle(new InstanceVector(-2000, 200), new Vector(4000, 20))
-        );
+        scene.addGameObject("FAKE_LAYER", camera);
+        // scene.addGameObject(
+        //     "front",
+        //     new Obstacle(new InstanceVector(-50000, 200), new Vector(100000, 20))
+        // );
         scene.addGameObject("back", player);
     });
 

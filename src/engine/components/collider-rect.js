@@ -174,9 +174,9 @@ class ColliderRect {
                 return direction.multiply(tVertical + ERROR);
             case 0b01:
                 return direction.multiply(tHorizontal + ERROR);
-            default:
-                return new Vector();
         }
+
+        return new Vector();
     }
 
     /**

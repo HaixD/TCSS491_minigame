@@ -18,27 +18,9 @@ class Player extends GameObject {
 
         this.position = position;
 
-        this.sprite = new Sprite(this.position, {
-            idle: new Spritesheet(
-                AssetManager.getImage("anims/placeholder-walk.png"),
-                new Vector(),
-                Player.#shape,
-                Player.#scale,
-                1,
-                10
-            ),
-            run: new Spritesheet(
-                AssetManager.getImage("anims/placeholder-walk.png"),
-                new Vector(),
-                Player.#shape,
-                Player.#scale,
-                4,
-                0.1
-            ),
-        });
-
         const playerShape = Player.#shape.multiply(Player.#scale);
-        const legHeight = playerShape.y / 8;
+        const legHeight = playerShape.y / 2;
+        const snapHeight = 40;
         this.legCollider = new ColliderRect(
             this,
             this.position,
@@ -53,12 +35,21 @@ class Player extends GameObject {
             new Vector(playerShape.x, playerShape.y - legHeight),
             Obstacle.TYPE_ID
         );
+        this.snapCollider = new ColliderRect(
+            this,
+            this.position,
+            new Vector(0, playerShape.y),
+            new Vector(playerShape.x, snapHeight),
+            Obstacle.TYPE_ID
+        );
         this.controller = new FallingPlayerController(
             new Vector(750, Infinity),
             1500,
             1500,
             7500,
             1000,
+            2000,
+            0,
             2000,
             0,
             2000,
@@ -113,18 +104,10 @@ class Player extends GameObject {
             offset = offset.add(0, -1);
         }
         if (events.keys["a"]) {
-            this.sprite.setHorizontalFlip(true);
             offset = offset.add(-1);
         }
         if (events.keys["d"]) {
-            this.sprite.setHorizontalFlip(false);
             offset = offset.add(1);
-        }
-
-        if (offset.isZero()) {
-            this.sprite.setState("idle");
-        } else {
-            this.sprite.setState("run");
         }
 
         const displacement = this.controller.updateAll(
@@ -139,14 +122,12 @@ class Player extends GameObject {
 
         let legAdjustment = new Vector();
         if (grounded) {
-            legAdjustment = this.legCollider.resolveCollisions(new Vector(0, 1));
+            legAdjustment = this.snapUp(displacement);
         } else {
             legAdjustment = this.legCollider.resolveCollisions(displacement);
+            // legAdjustment = legAdjustment.add(this.snapDown(displacement));
         }
         this.position.add(legAdjustment);
-
-        this.sprite.setVerticalFlip(!grounded && this.controller.velocity.y > 0);
-        this.sprite.incrementTimeline(deltaTime);
 
         this.lastBlockedDirections = table.NO_BLOCK;
         this.lastBlockedDirections |= table.LEFT * (torsoAdjustment.x > 0 || legAdjustment.x > 0);
@@ -163,26 +144,55 @@ class Player extends GameObject {
     draw(ctx, offset) {
         super.draw(ctx, offset);
 
-        // this.sprite.drawSprite(ctx, offset);
-
         // debugging
         this.torsoCollider.drawCollider(ctx, offset);
         this.legCollider.drawCollider(ctx, offset);
-        // this.sprite.drawOutline(ctx, offset);
+        this.snapCollider.drawCollider(ctx, offset);
     }
 
-    testCollisions(deltaTime) {
-        const initialVelocity = this.controller.velocity.asVector();
-        const initialPosition = this.position.asVector();
+    snapUp(displacement) {
+        const highestCollider = { y: Infinity, collider: null };
 
-        this.controller.updateNatural();
-        const displacement = this.controller.updateVelocity(deltaTime);
-        this.position.add(displacement);
-        const test = this.torsoCollider.resolveCollisions(displacement);
+        const collisions = this.legCollider.getCollisions();
+        while (true) {
+            const { value: collider, done } = collisions.next();
+            if (done) break;
 
-        this.controller.overrideVelocity(initialVelocity);
-        this.position.set(initialPosition);
+            if (collider.position.y < highestCollider.y) {
+                highestCollider.y = collider.position.y;
+                highestCollider.collider = collider;
+            }
+        }
 
-        return test;
+        if (highestCollider.collider === null) {
+            return this.legCollider.resolveCollisions(displacement);
+        }
+
+        return this.legCollider.resolveCollision(new Vector(0, 1), highestCollider.collider);
+    }
+
+    snapDown(displacement) {
+        const lowestCollider = { y: -Infinity, collider: null };
+        const collisions = this.snapCollider.getCollisions();
+
+        while (true) {
+            const { value: collider, done } = collisions.next();
+            if (done) break;
+            if (lowestCollider.collider !== null) return new Vector();
+
+            if (collider.position.y > lowestCollider.y) {
+                lowestCollider.y = collider.position.y;
+                lowestCollider.collider = collider;
+            }
+        }
+
+        if (lowestCollider.y < this.snapCollider.position.y) {
+            return new Vector();
+        }
+
+        return new Vector(
+            0,
+            lowestCollider.collider !== null ? lowestCollider.y - this.snapCollider.position.y : 0
+        );
     }
 }

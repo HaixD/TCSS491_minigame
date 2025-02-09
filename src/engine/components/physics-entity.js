@@ -3,7 +3,10 @@
 /** @typedef {import("../util")} */
 
 class PhysicsEntity {
+    /** Acceleration towards velocity=0 */
     #counterAcceleration;
+    /** Acceleration towards abs(velocity)=terminal velocity if velocity is high enough */
+    #terminalAcceleration;
 
     /**
      * @param {Vector | undefined} terminalVelocity
@@ -13,6 +16,7 @@ class PhysicsEntity {
         this.velocity = new InstanceVector();
         this.acceleration = new InstanceVector();
         this.#counterAcceleration = new InstanceVector();
+        this.#terminalAcceleration = new InstanceVector();
     }
 
     /**
@@ -21,45 +25,70 @@ class PhysicsEntity {
      * @returns displacement
      */
     updateVelocity(deltaTime) {
-        const initialVelocity = this.velocity.asVector().map(Math.abs);
+        const initialVelocity = this.velocity.asVector();
 
         // apply acceleration
-        this.velocity.add(this.acceleration.multiply(deltaTime));
-
-        const intermediateVelocity = this.velocity.asVector();
+        const accelerationVelocity = this.acceleration.multiply(deltaTime);
+        this.velocity.add(accelerationVelocity);
+        const absVelocity = this.velocity.map(Math.abs);
+        if (
+            !isDirectionalCounter(initialVelocity.x, accelerationVelocity.x) &&
+            absVelocity.x > this.terminalVelocity.x
+        ) {
+            if (Math.abs(initialVelocity.x) < this.terminalVelocity.x) {
+                this.velocity.x = getDirection(this.velocity.x) * this.terminalVelocity.x;
+            } else {
+                this.velocity.x = initialVelocity.x;
+            }
+        }
+        if (
+            !isDirectionalCounter(initialVelocity.y, accelerationVelocity.y) &&
+            absVelocity.y > this.terminalVelocity.y
+        ) {
+            if (Math.abs(initialVelocity.y) < this.terminalVelocity.y) {
+                this.velocity.y = getDirection(this.velocity.y) * this.terminalVelocity.y;
+            } else {
+                this.velocity.y = initialVelocity.y;
+            }
+        }
 
         // apply counter acceleration
-        this.acceleration.set(0, 0);
-        this.#addCounterAcceleration(intermediateVelocity);
+        const preCounterVelocity = this.velocity.asVector();
+        this.#updateCounterAcceleration(preCounterVelocity);
         this.velocity.add(this.acceleration.multiply(deltaTime));
 
         if (!this.#counterAcceleration.isZero()) {
-            if (isDirectionalCounter(intermediateVelocity.x, this.velocity.x)) {
+            if (isDirectionalCounter(preCounterVelocity.x, this.velocity.x)) {
                 this.velocity.x = 0;
             }
-            if (isDirectionalCounter(intermediateVelocity.y, this.velocity.y)) {
+            if (isDirectionalCounter(preCounterVelocity.y, this.velocity.y)) {
                 this.velocity.y = 0;
             }
         }
 
-        // apply terminal velocity
-        const currentVelocity = this.velocity.map(Math.abs);
-        if (isBetween(this.terminalVelocity.x, initialVelocity.x, currentVelocity.x)) {
-            this.velocity.x = Math.max(
-                Math.min(this.velocity.x, this.terminalVelocity.x),
-                -this.terminalVelocity.x
-            );
+        // apply terminal acceleration
+        const preTerminalVelocity = this.velocity.map(Math.abs);
+        this.#addTerminalAcceleration();
+
+        const terminalVelocity = this.acceleration.multiply(deltaTime);
+
+        if (preTerminalVelocity.x > this.terminalVelocity.x) {
+            const difference =
+                Math.min(terminalVelocity.x, preTerminalVelocity.x - this.terminalVelocity.x) *
+                -getDirection(this.velocity.x);
+            this.velocity.x += difference;
         }
-        if ((isBetween(this.terminalVelocity.y), initialVelocity.y, currentVelocity.y)) {
-            this.velocity.y = Math.max(
-                Math.min(this.velocity.y, this.terminalVelocity.y),
-                -this.terminalVelocity.y
-            );
+        if (preTerminalVelocity.y > this.terminalVelocity.y) {
+            const difference =
+                Math.min(terminalVelocity.y, preTerminalVelocity.y - this.terminalVelocity.y) *
+                -getDirection(this.velocity.y);
+            this.velocity.y += difference;
         }
 
         // reset temporary states
         this.acceleration.set(0, 0);
         this.#counterAcceleration.set(0, 0);
+        this.#terminalAcceleration.set(0, 0);
 
         return this.velocity.asVector().multiply(deltaTime);
     }
@@ -81,10 +110,19 @@ class PhysicsEntity {
     }
 
     /**
+     * Applies an acceleration that goes in the opposite direction of velocity (towards terminal velocity instead of 0).
+     * @param {Vector} acceleration
+     */
+    applyTerminalAcceleration(acceleration) {
+        this.#terminalAcceleration.add(acceleration);
+    }
+
+    /**
      * Adds counterAcceleration to acceleration in the opposite direction of intermediate velocity
      * @param {Vector} intermediateVelocity
      */
-    #addCounterAcceleration(intermediateVelocity) {
+    #updateCounterAcceleration(intermediateVelocity) {
+        this.acceleration.set(0, 0);
         if (intermediateVelocity.x > 0) {
             this.acceleration.add(new Vector(-this.#counterAcceleration.x, 0));
         } else if (intermediateVelocity.x < 0) {
@@ -92,9 +130,13 @@ class PhysicsEntity {
         }
 
         if (intermediateVelocity.y > 0) {
-            this.acceleration.add(new Vector(-this.#counterAcceleration.y, 0));
+            this.acceleration.add(new Vector(0, -this.#counterAcceleration.y));
         } else if (intermediateVelocity.y < 0) {
-            this.acceleration.add(new Vector(this.#counterAcceleration.y, 0));
+            this.acceleration.add(new Vector(0, this.#counterAcceleration.y));
         }
+    }
+
+    #addTerminalAcceleration() {
+        this.acceleration.set(this.#terminalAcceleration);
     }
 }
