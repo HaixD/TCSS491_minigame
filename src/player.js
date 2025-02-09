@@ -148,8 +148,6 @@ class Player extends GameObject {
         this.torsoCollider.drawCollider(ctx, offset);
         this.legCollider.drawCollider(ctx, offset);
         this.snapCollider.drawCollider(ctx, offset);
-
-        console.log(this.controller.velocity.x);
     }
 
     snapUp(displacement) {

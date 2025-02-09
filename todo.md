@@ -5,6 +5,7 @@
 - make camera only follow player horizontally (fixed vertical position)
 - dummy enemy (no ai, just takes damage)
 - fix documentation
+- test player snap up and down
 # Long-Term Todos
 - attack (skills, combos), dodge, and parry system
 - ensure game works with higher quality assets
@@ -21,3 +22,4 @@
 - particles (?)
 - `InstanceVector` (alternative) class which always copies the `x` or/and `y` of another `InstanceVector` maybe with an offset too
 # Bugs
+- right click registers as a left click too (when right clicking `leftClick === null` is false)

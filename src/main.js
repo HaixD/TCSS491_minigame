@@ -88,10 +88,10 @@ async function main() {
         scene.addLayer("front");
 
         scene.addGameObject("FAKE_LAYER", camera);
-        // scene.addGameObject(
-        //     "front",
-        //     new Obstacle(new InstanceVector(-50000, 200), new Vector(100000, 20))
-        // );
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-50000, 200), new Vector(100000, 20))
+        );
         scene.addGameObject("back", player);
     });
 
