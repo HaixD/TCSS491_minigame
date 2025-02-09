@@ -129,10 +129,13 @@ class FallingPlayerController extends PhysicsEntity {
         this.updateHorizontal(offset, grounded);
         this.updateVertical(jumping, grounded);
 
-        if (blockedDirections & (table.LEFT | table.RIGHT)) {
+        if (blockedDirections & table.LEFT && this.velocity.x < 0) {
             this.velocity.x = 0;
         }
-        if (blockedDirections & table.ABOVE) {
+        if (blockedDirections & table.RIGHT && this.velocity.x > 0) {
+            this.velocity.x = 0;
+        }
+        if (blockedDirections & table.ABOVE && this.velocity.y < 0) {
             this.#jumping = false;
             this.velocity.y = 0;
         }
