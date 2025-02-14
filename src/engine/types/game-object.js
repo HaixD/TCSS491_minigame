@@ -45,6 +45,14 @@ class GameObject {
     }
 
     /**
+     * Gets the TYPE_ID property of this Game Object
+     * @returns {Symbol}
+     */
+    getTypeID() {
+        return this.constructor.TYPE_ID;
+    }
+
+    /**
      * Updates the state of this Game Object
      * @param {number} deltaTime
      * @param {InputEvents} events

@@ -2,12 +2,12 @@
 /** @typedef {import("./engine/components/sprite")} */
 /** @typedef {import("./engine/components/falling-player-controller")} */
 /** @typedef {import("./engine/util")} */
-/** @typedef {import("./bullet")} */
+/** @typedef {import("./stair-controller")} */
 
 class Player extends GameObject {
     static TYPE_ID = Symbol(Player.name);
 
-    static #scale = 5;
+    static #scale = 4.99;
     static #shape = new Vector(12, 24);
 
     /**
@@ -21,26 +21,33 @@ class Player extends GameObject {
         const playerShape = Player.#shape.multiply(Player.#scale);
         const legHeight = playerShape.y / 2;
         const snapHeight = 40;
-        this.legCollider = new ColliderRect(
-            this,
-            this.position,
-            new Vector(0, playerShape.y - legHeight),
-            new Vector(playerShape.x, legHeight),
-            Obstacle.TYPE_ID
-        );
-        this.torsoCollider = new ColliderRect(
+        this.topCollider = new ColliderRect(
             this,
             this.position,
             new Vector(),
             new Vector(playerShape.x, playerShape.y - legHeight),
-            Obstacle.TYPE_ID
+            Obstacle.TYPE_ID,
+            Stair.TYPE_ID
         );
-        this.snapCollider = new ColliderRect(
+        this.middleCollider = new ColliderRect(
+            this,
+            this.position,
+            new Vector(0, playerShape.y - legHeight),
+            new Vector(playerShape.x, legHeight),
+            Obstacle.TYPE_ID,
+            Stair.TYPE_ID
+        );
+        this.bottomCollider = new ColliderRect(
             this,
             this.position,
             new Vector(0, playerShape.y),
             new Vector(playerShape.x, snapHeight),
-            Obstacle.TYPE_ID
+            Stair.TYPE_ID
+        );
+        this.stairController = new StairController(
+            this.middleCollider,
+            this.bottomCollider,
+            Infinity
         );
         this.controller = new FallingPlayerController(
             new Vector(750, Infinity),
@@ -88,7 +95,7 @@ class Player extends GameObject {
         if (events.leftClick !== null) {
             const difference = this.position
                 .asVector()
-                .add(this.torsoCollider.shape.multiply(0.5))
+                .add(this.topCollider.shape.multiply(0.5))
                 .subtract(events.leftClick)
                 .multiply(5);
             this.controller.velocity.add(difference);
@@ -110,30 +117,20 @@ class Player extends GameObject {
             offset = offset.add(1);
         }
 
-        const displacement = this.controller.updateAll(
-            deltaTime,
-            offset,
-            this.lastBlockedDirections
-        );
+        let displacement = this.controller.updateAll(deltaTime, offset, this.lastBlockedDirections);
         this.position.add(displacement);
 
-        const torsoAdjustment = this.torsoCollider.resolveCollisions(displacement);
-        this.position.add(torsoAdjustment);
+        const topAdjustment = this.topCollider.resolveCollisions(displacement);
+        this.position.add(topAdjustment);
 
-        let legAdjustment = new Vector();
-        if (grounded) {
-            legAdjustment = this.snapUp(displacement);
-        } else {
-            legAdjustment = this.legCollider.resolveCollisions(displacement);
-            // legAdjustment = legAdjustment.add(this.snapDown(displacement));
-        }
-        this.position.add(legAdjustment);
+        const stairAdjustment = this.stairController.updateState(displacement);
+        this.position.add(stairAdjustment);
 
         this.lastBlockedDirections = table.NO_BLOCK;
-        this.lastBlockedDirections |= table.LEFT * (torsoAdjustment.x > 0 || legAdjustment.x > 0);
-        this.lastBlockedDirections |= table.RIGHT * (torsoAdjustment.x < 0 || legAdjustment.x < 0);
-        this.lastBlockedDirections |= table.ABOVE * (torsoAdjustment.y > 0);
-        this.lastBlockedDirections |= table.BELOW * (legAdjustment.y < 0);
+        this.lastBlockedDirections |= table.LEFT * (topAdjustment.x > 0 || stairAdjustment.x > 0);
+        this.lastBlockedDirections |= table.RIGHT * (topAdjustment.x < 0 || stairAdjustment.x < 0);
+        this.lastBlockedDirections |= table.ABOVE * (topAdjustment.y > 0);
+        this.lastBlockedDirections |= table.BELOW * (stairAdjustment.y < 0);
     }
 
     /**
@@ -145,54 +142,8 @@ class Player extends GameObject {
         super.draw(ctx, offset);
 
         // debugging
-        this.torsoCollider.drawCollider(ctx, offset);
-        this.legCollider.drawCollider(ctx, offset);
-        this.snapCollider.drawCollider(ctx, offset);
-    }
-
-    snapUp(displacement) {
-        const highestCollider = { y: Infinity, collider: null };
-
-        const collisions = this.legCollider.getCollisions();
-        while (true) {
-            const { value: collider, done } = collisions.next();
-            if (done) break;
-
-            if (collider.position.y < highestCollider.y) {
-                highestCollider.y = collider.position.y;
-                highestCollider.collider = collider;
-            }
-        }
-
-        if (highestCollider.collider === null) {
-            return this.legCollider.resolveCollisions(displacement);
-        }
-
-        return this.legCollider.resolveCollision(new Vector(0, 1), highestCollider.collider);
-    }
-
-    snapDown(displacement) {
-        const lowestCollider = { y: -Infinity, collider: null };
-        const collisions = this.snapCollider.getCollisions();
-
-        while (true) {
-            const { value: collider, done } = collisions.next();
-            if (done) break;
-            if (lowestCollider.collider !== null) return new Vector();
-
-            if (collider.position.y > lowestCollider.y) {
-                lowestCollider.y = collider.position.y;
-                lowestCollider.collider = collider;
-            }
-        }
-
-        if (lowestCollider.y < this.snapCollider.position.y) {
-            return new Vector();
-        }
-
-        return new Vector(
-            0,
-            lowestCollider.collider !== null ? lowestCollider.y - this.snapCollider.position.y : 0
-        );
+        this.topCollider.drawCollider(ctx, offset);
+        this.middleCollider.drawCollider(ctx, offset);
+        // this.bottomCollider.drawCollider(ctx, offset);
     }
 }

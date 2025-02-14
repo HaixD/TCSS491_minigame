@@ -186,17 +186,15 @@ class ColliderRect {
      */
     resolveCollisions(displacement) {
         const collisions = this.getCollisions();
-        let neededDisplacement = new Vector();
+        let neededDisplacement = new InstanceVector();
 
         while (true) {
             const { value: collider, done } = collisions.next();
             if (done) break;
 
-            neededDisplacement = neededDisplacement.add(
-                this.resolveCollision(displacement, collider)
-            );
+            neededDisplacement.add(this.resolveCollision(displacement, collider));
         }
 
-        return neededDisplacement;
+        return neededDisplacement.asVector();
     }
 }
