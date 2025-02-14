@@ -63,6 +63,7 @@ class Player extends GameObject {
             1000,
             700
         );
+
         this.lastBlockedDirections = FallingPlayerController.BLOCK_DIRECTION.NO_BLOCK;
     }
 
@@ -90,34 +91,18 @@ class Player extends GameObject {
         super.update(deltaTime, events);
 
         const table = FallingPlayerController.BLOCK_DIRECTION;
-        const grounded = Boolean(this.lastBlockedDirections & table.BELOW);
 
-        if (events.leftClick !== null) {
-            const difference = this.position
-                .asVector()
-                .add(this.topCollider.shape.multiply(0.5))
-                .subtract(events.leftClick)
-                .multiply(5);
-            this.controller.velocity.add(difference);
+        if (events.mouseDown !== 0) {
+            console.log(events.mouseDown);
         }
-        if (events.scroll) {
-            const sceneNumber = events.scroll > 0 ? 1 : 2;
-            GameEngine.setScene(`scene${sceneNumber}`);
-        }
+        this.#handleExtraEvents(events);
+        const desiredDirection = this.#getOffset(events);
 
-        let offset = new Vector();
-
-        if (events.keys[" "]) {
-            offset = offset.add(0, -1);
-        }
-        if (events.keys["a"]) {
-            offset = offset.add(-1);
-        }
-        if (events.keys["d"]) {
-            offset = offset.add(1);
-        }
-
-        let displacement = this.controller.updateAll(deltaTime, offset, this.lastBlockedDirections);
+        let displacement = this.controller.updateAll(
+            deltaTime,
+            desiredDirection,
+            this.lastBlockedDirections
+        );
         this.position.add(displacement);
 
         const topAdjustment = this.topCollider.resolveCollisions(displacement);
@@ -126,6 +111,7 @@ class Player extends GameObject {
         const stairAdjustment = this.stairController.updateState(displacement);
         this.position.add(stairAdjustment);
 
+        // compute last blocked directions with a 1 update delay (so things match up visually)
         this.lastBlockedDirections = table.NO_BLOCK;
         this.lastBlockedDirections |= table.LEFT * (topAdjustment.x > 0 || stairAdjustment.x > 0);
         this.lastBlockedDirections |= table.RIGHT * (topAdjustment.x < 0 || stairAdjustment.x < 0);
@@ -145,5 +131,36 @@ class Player extends GameObject {
         this.topCollider.drawCollider(ctx, offset);
         this.middleCollider.drawCollider(ctx, offset);
         // this.bottomCollider.drawCollider(ctx, offset);
+    }
+
+    #handleExtraEvents(events) {
+        if (events.leftClick !== null) {
+            const difference = this.position
+                .asVector()
+                .add(this.topCollider.shape.multiply(0.5))
+                .subtract(events.leftClick)
+                .multiply(5);
+            this.controller.velocity.add(difference);
+        }
+        if (events.scroll) {
+            const sceneNumber = events.scroll > 0 ? 1 : 2;
+            GameEngine.setScene(`scene${sceneNumber}`);
+        }
+    }
+
+    #getOffset(events) {
+        const offset = new InstanceVector();
+
+        if (events.keys[" "]) {
+            offset.add(0, -1);
+        }
+        if (events.keys["a"]) {
+            offset.add(-1);
+        }
+        if (events.keys["d"]) {
+            offset.add(1);
+        }
+
+        return offset.asVector();
     }
 }

@@ -8,10 +8,13 @@
 - fix documentation
 - implement stairs in test scene
 - staircase class which automatically adds a bunch of obstacles
+- replace all `obj.constructor.TYPE_ID with obj.getTypeID()`
 # Long-Term Todos
 - attack (skills, combos), dodge, and parry system
 - ensure game works with higher quality assets
 # Currently Unnecessary Todos
+- consider `GameObject.isType(TYPE_ID)`
+- consider making some factory/builder class to make top, middle, and bottom colliders
 - if the player is the exact height as the bottom boundary of the obstacle above it, jumping causes you to glitch/phase
     - temporary fix is to make player height 0 < x < 1 unit shorter so that it is not visible and collisions aren't triggered
 - use map to quickly get all colliders of a certain type
@@ -30,3 +33,6 @@
 # Bugs/Bottlenecks
 - right click registers as a left click too (when right clicking `leftClick === null` is false)
 - calling `getCollisions` with the same collider in the same frame will recompute all collisions
+- at high velocities running into a stair causes complete stop
+    - this **might** be due to the head/top collider colliding with the stair along with the body
+    - this issue only arises with unnaturally high speeds

@@ -42,7 +42,8 @@ class GameEngine {
             GameEngine.#inputEvents.scroll = e.deltaY;
         });
         GameEngine.#ctx.canvas.addEventListener("contextmenu", e => {
-            GameEngine.#inputEvents.leftClick = GameEngine.#processMouseEvent(e);
+            e.preventDefault();
+            GameEngine.#inputEvents.rightClick = GameEngine.#processMouseEvent(e);
         });
         GameEngine.#ctx.canvas.addEventListener("keydown", e => {
             GameEngine.#inputEvents.keys[e.key] = true;
@@ -51,10 +52,10 @@ class GameEngine {
             GameEngine.#inputEvents.keys[e.key] = false;
         });
         GameEngine.#ctx.canvas.addEventListener("mousedown", e => {
-            GameEngine.#inputEvents.mouseDown = true;
+            GameEngine.#inputEvents.mouseDown = e.buttons;
         });
         GameEngine.#ctx.canvas.addEventListener("mouseup", e => {
-            GameEngine.#inputEvents.mouseDown = false;
+            GameEngine.#inputEvents.mouseDown = e.buttons;
         });
     }
 

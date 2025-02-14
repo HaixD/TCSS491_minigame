@@ -92,6 +92,29 @@ class ColliderRect {
     }
 
     /**
+     * Gets all colliders colliding with the given boundary in the current active context
+     * @param {...Symbol} collisionTargets
+     * @param {Boundary} boundary
+     * @returns The ColliderRect object which collides with this one
+     */
+    static *scanColliders(boundary, ...collisionTargets) {
+        const colliders = ColliderRect.#contexts[ColliderRect.#activeContext].colliders;
+        for (const collider of Object.values(colliders)) {
+            if (collider.parent.delete) {
+                collider.delete();
+                continue;
+            }
+
+            if (
+                collisionTargets.has(collider.parent.getTypeID()) &&
+                boundary.containsBoundary(collider.getBoundary())
+            ) {
+                yield collider;
+            }
+        }
+    }
+
+    /**
      * Gets the x and y starts and ends of this ColliderRect.
      * @returns The bounds of this ColliderRect
      */

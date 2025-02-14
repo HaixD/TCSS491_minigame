@@ -13,7 +13,7 @@ class InputEvents {
         /** @type {{[key: string]: boolean}} */
         this.keys = {};
         this.mousePosition = new InstanceVector();
-        this.mouseDown = false;
+        this.mouseDown = 0;
     }
 
     reset() {
