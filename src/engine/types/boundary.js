@@ -1,6 +1,12 @@
 /** @typedef {import("./vector")} */
 
 class Boundary {
+    /**
+     * @param {number} left
+     * @param {number} right
+     * @param {number} top
+     * @param {number} bottom
+     */
     constructor(left, right, top, bottom) {
         this.left = left;
         this.right = right;
