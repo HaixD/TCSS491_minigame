@@ -22,7 +22,7 @@ class GameEngine {
             event.clientY - GameEngine.#ctx.canvas.getBoundingClientRect().top
         );
 
-        return GameEngine.getActiveScene().getWorldVector(screenVector);
+        return screenVector;
     }
 
     /**
@@ -32,7 +32,10 @@ class GameEngine {
         GameEngine.#ctx = ctx;
 
         GameEngine.#ctx.canvas.addEventListener("mousemove", e => {
-            GameEngine.#inputEvents.mousePosition.set(GameEngine.#processMouseEvent(e));
+            GameEngine.#inputEvents.canvasMousePosition.set(GameEngine.#processMouseEvent(e));
+            GameEngine.#inputEvents.worldMousePosition.set(
+                GameEngine.getActiveScene().getWorldVector(GameEngine.#processMouseEvent(e))
+            );
         });
         GameEngine.#ctx.canvas.addEventListener("click", e => {
             GameEngine.#inputEvents.leftClick = GameEngine.#processMouseEvent(e);

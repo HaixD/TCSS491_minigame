@@ -133,12 +133,15 @@ class Player extends GameObject {
         // this.bottomCollider.drawCollider(ctx, offset);
     }
 
+    /**
+     * @param {InputEvents} events
+     */
     #handleExtraEvents(events) {
         if (events.leftClick !== null) {
             const difference = this.position
                 .asVector()
                 .add(this.topCollider.shape.multiply(0.5))
-                .subtract(events.leftClick)
+                .subtract(events.worldMousePosition)
                 .multiply(5);
             this.controller.velocity.add(difference);
         }
@@ -148,6 +151,9 @@ class Player extends GameObject {
         }
     }
 
+    /**
+     * @param {InputEvents} events
+     */
     #getOffset(events) {
         const offset = new InstanceVector();
 

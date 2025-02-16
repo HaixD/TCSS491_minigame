@@ -12,7 +12,8 @@ class InputEvents {
 
         /** @type {{[key: string]: boolean}} */
         this.keys = {};
-        this.mousePosition = new InstanceVector();
+        this.worldMousePosition = new InstanceVector();
+        this.canvasMousePosition = new InstanceVector();
         this.mouseDown = 0;
     }
 
