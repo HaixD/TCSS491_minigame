@@ -51,7 +51,7 @@ class Room extends GameObject {
 
             this.#mouseTilePosition = new Vector(col, row);
 
-            if (events.leftClick !== null) {
+            if (events.mouseDown === 1) {
                 this.#tiles[row][col] = Tile.TYPE.DIRT;
             }
         } else {
