@@ -15,9 +15,17 @@ async function main() {
     ctx.imageSmoothingEnabled = false;
 
     GameEngine.createScene("main", scene => {
-        scene.addLayer("NULL");
-        scene.addGameObject("NULL", new User());
-        scene.addGameObject("NULL", new Camera());
+        // make game objects
+        const user = new User(new InstanceVector(Room.SIZE / 2, Room.SIZE / 2));
+        const camera = new Camera(user.position, new Vector(-canvas.width / 2, -canvas.height / 2));
+        const room = new Room(new Vector());
+
+        scene.addGameObject("NULL", user);
+        scene.addGameObject("NULL", camera);
+
+        scene.addGameObject("rooms", room);
+
+        scene.setOffset(camera.position);
     });
 
     // start

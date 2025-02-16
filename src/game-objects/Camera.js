@@ -8,11 +8,15 @@ class Camera extends GameObject {
     constructor(parent, offset) {
         super();
 
+        this.parent = parent;
         this.offset = offset;
-        this.position = offset.add(parent);
+
+        this.position = new InstanceVector(parent).add(offset);
     }
 
     update(deltaTime, events) {
-        this.position = this.offset.add(parent);
+        super.update(deltaTime, events);
+
+        this.position.set(this.offset.add(this.parent));
     }
 }
