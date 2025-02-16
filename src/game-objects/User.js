@@ -26,12 +26,14 @@ class User extends GameObject {
 
         if (events.mouseDown & 0b10) {
             if (this.#lastRightPosition === null) {
-                this.#lastRightPosition = events.mousePosition.asVector();
+                this.#lastRightPosition = events.canvasMousePosition.asVector();
             } else {
-                const currentMousePosition = events.mousePosition.asVector();
+                const currentMousePosition = events.canvasMousePosition.asVector();
                 this.position.add(currentMousePosition.subtract(this.#lastRightPosition).negate());
                 this.#lastRightPosition = currentMousePosition;
             }
+        } else {
+            this.#lastRightPosition = null;
         }
     }
 }
