@@ -139,8 +139,8 @@ class ColliderRect {
      * @param {CanvasRenderingContext2D} ctx
      * @param {Vector} offset
      */
-    drawCollider(ctx, offset) {
-        const position = this.position.asVector().add(this.offset).subtract(offset);
+    drawCollider(ctx) {
+        const position = this.position.asVector().add(this.offset);
 
         ctx.strokeRect(position.x, position.y, this.shape.x, this.shape.y);
     }

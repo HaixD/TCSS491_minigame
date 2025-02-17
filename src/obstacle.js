@@ -25,10 +25,9 @@ class Obstacle extends GameObject {
     /**
      * @override
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    draw(ctx, offset) {
-        const position = this.position.asVector().subtract(offset);
+    draw(ctx) {
+        const position = this.position.asVector();
 
         ctx.fillRect(position.x, position.y, this.shape.x, this.shape.y);
     }

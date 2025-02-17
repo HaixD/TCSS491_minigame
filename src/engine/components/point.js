@@ -14,12 +14,11 @@ class Point {
     /**
      * Draws this point on to the canvas
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    drawPoint(ctx, offset) {
+    drawPoint(ctx) {
         ctx.save();
 
-        const { x, y } = this.position.asVector().add(this.offset).subtract(offset);
+        const { x, y } = this.position.asVector().add(this.offset);
 
         ctx.fillStyle = "lime";
         ctx.arc(x, y, 5, 0, Math.PI * 2);

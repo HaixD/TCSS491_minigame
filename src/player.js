@@ -2,6 +2,7 @@
 /** @typedef {import("./engine/components/sprite")} */
 /** @typedef {import("./engine/components/falling-player-controller")} */
 /** @typedef {import("./engine/util")} */
+/** @typedef {import("./engine/assetmanager")} */
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./stair-controller")} */
 
@@ -64,6 +65,17 @@ class Player extends GameObject {
             1000,
             700
         );
+        this.sprite = new Sprite(this.position, {
+            run: new Spritesheet(
+                AssetManager.getImage("/anims/placeholder-walk.png"),
+                new Vector(),
+                new Vector(12, 24),
+                Player.#scale,
+                4,
+                0.5
+            ),
+        });
+        this.sprite.setState("run");
 
         this.lastBlockedDirections = FallingPlayerController.BLOCK_DIRECTION.NO_BLOCK;
     }
@@ -115,6 +127,10 @@ class Player extends GameObject {
         this.lastBlockedDirections |= table.RIGHT * (topAdjustment.x < 0 || stairAdjustment.x < 0);
         this.lastBlockedDirections |= table.ABOVE * (topAdjustment.y > 0);
         this.lastBlockedDirections |= table.BELOW * (stairAdjustment.y < 0);
+
+        this.sprite.incrementTimeline(deltaTime);
+        this.sprite.setHorizontalFlip(this.controller.velocity.x < 0);
+        this.sprite.rotation += deltaTime;
     }
 
     /**
@@ -122,13 +138,16 @@ class Player extends GameObject {
      * @param {CanvasRenderingContext2D} ctx
      * @param {Vector} offset
      */
-    draw(ctx, offset) {
-        super.draw(ctx, offset);
+    draw(ctx) {
+        super.draw(ctx);
+
+        this.sprite.drawSprite(ctx);
 
         // debugging
-        this.topCollider.drawCollider(ctx, offset);
-        this.middleCollider.drawCollider(ctx, offset);
-        // this.bottomCollider.drawCollider(ctx, offset);
+        this.topCollider.drawCollider(ctx);
+        this.middleCollider.drawCollider(ctx);
+        this.sprite.drawOutline(ctx);
+        this.bottomCollider.drawCollider(ctx);
     }
 
     /**

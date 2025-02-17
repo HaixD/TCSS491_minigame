@@ -7,7 +7,6 @@
 class Sprite {
     #state;
     #offset;
-    #rotation;
     #verticalFlip;
     #horizontalFlip;
     #timeline;
@@ -29,7 +28,7 @@ class Sprite {
         /** @type {string} */
         this.#state = Object.keys(animations)[0];
         this.#offset = new Vector();
-        this.#rotation = 0;
+        this.rotation = 0;
         this.#verticalFlip = 1;
         this.#horizontalFlip = 1;
         this.#timeline = 0;
@@ -50,7 +49,7 @@ class Sprite {
      * @param {number} radians
      */
     setRotation(radians) {
-        this.#rotation = radians;
+        this.rotation = radians;
     }
 
     /**
@@ -99,18 +98,17 @@ class Sprite {
     /**
      * Draws the sprite on to the canvas
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    drawSprite(ctx, offset) {
+    drawSprite(ctx) {
         const currentState = this.#state;
         const animation = this.animations[currentState];
         if ("then" in animation.spritesheet) {
             animation.spritesheet.then(image => {
                 animation.spritesheet = image;
-                this.#drawAnimation(ctx, offset, this.animations[currentState]);
+                this.#drawAnimation(ctx, this.animations[currentState]);
             });
         } else {
-            this.#drawAnimation(ctx, offset, animation);
+            this.#drawAnimation(ctx, animation);
         }
     }
 
@@ -120,15 +118,15 @@ class Sprite {
      * @param {Vector} offset
      * @param {Spritesheet} animation
      */
-    #drawAnimation(ctx, offset, animation) {
+    #drawAnimation(ctx, animation) {
         const shape = animation.shape.multiply(animation.scale);
-        const position = this.parent.asVector().add(this.#offset).subtract(offset);
+        const position = this.parent.asVector().add(this.#offset);
         const translation = position.add(shape.multiply(0.5));
 
         ctx.save();
 
         ctx.translate(translation.x, translation.y);
-        ctx.rotate(-this.#rotation);
+        ctx.rotate(-this.rotation);
         ctx.translate(-translation.x, -translation.y);
         ctx.scale(this.#horizontalFlip, this.#verticalFlip);
 
@@ -163,19 +161,18 @@ class Sprite {
     /**
      * Draws an outline of this Sprite instead of an image
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    drawOutline(ctx, offset) {
+    drawOutline(ctx) {
         const shape = this.animations[this.#state].shape.multiply(
             this.animations[this.#state].scale
         );
-        const position = this.parent.asVector().add(this.#offset).subtract(offset);
+        const position = this.parent.asVector().add(this.#offset);
         const translation = position.add(shape.multiply(0.5));
 
         ctx.save();
 
         ctx.translate(translation.x, translation.y);
-        ctx.rotate(-this.#rotation);
+        ctx.rotate(-this.rotation);
         ctx.translate(-translation.x, -translation.y);
         ctx.scale(this.#horizontalFlip, this.#verticalFlip);
         ctx.strokeStyle = "red";
