@@ -19,7 +19,7 @@ class Scene {
         this.#offset = new InstanceVector();
         this.#gameObjects = {};
         this.#nextLayerID = {};
-        this.scale = 0.5;
+        this.scale = 1;
     }
 
     /**
@@ -142,6 +142,8 @@ class Scene {
      * @param {Vector} screenVector vector of sceen position (not in world)
      */
     getWorldVector(screenVector) {
-        return this.#offset.asVector().add(screenVector);
+        const { left, top } = this.getViewBounds();
+
+        return screenVector.multiply(1 / this.scale).add(left, top);
     }
 }
