@@ -1,4 +1,6 @@
 /** @typedef {import("../engine/types/instance-vector")} */
+/** @typedef {import("../engine/types/game-object")} */
+/** @typedef {impor("../gui")} */
 
 class User extends GameObject {
     static TYPE_ID = Symbol(User.name);
@@ -6,6 +8,7 @@ class User extends GameObject {
 
     /** @type {Vector | null} */
     #lastRightPosition;
+    #mousePosition;
     #scaleIndex;
 
     /**
@@ -21,7 +24,12 @@ class User extends GameObject {
         this.cameraPosition = new InstanceVector(position).add(cameraOffset);
 
         this.#lastRightPosition = null;
+        this.#mousePosition = new Vector();
         this.#scaleIndex = 3;
+    }
+
+    getBoundary() {
+        return new Boundary(-Infinity, Infinity, -Infinity, Infinity);
     }
 
     /**
@@ -35,6 +43,8 @@ class User extends GameObject {
         const scene = GameEngine.getActiveScene();
 
         // move
+        this.#mousePosition = GridUI.toGridPosition(events.worldMousePosition).multiply(Tile.SIZE);
+
         if (events.mouseDown & 0b10) {
             if (this.#lastRightPosition === null) {
                 this.#lastRightPosition = events.canvasMousePosition.asVector();
@@ -51,6 +61,9 @@ class User extends GameObject {
         } else {
             this.#lastRightPosition = null;
         }
+        if (events.mouseDown & 0b1) {
+            GameMap.setTile(this.#mousePosition.x, this.#mousePosition.y, GUI.getTile());
+        }
 
         this.cameraPosition.set(this.cameraOffset.add(this.position));
 
@@ -64,5 +77,15 @@ class User extends GameObject {
 
             GameEngine.getActiveScene().scale = User.SCALES[this.#scaleIndex];
         }
+    }
+
+    /**
+     * @param {CanvasRenderingContext2D} ctx
+     */
+    draw(ctx) {
+        super.draw(ctx);
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+        ctx.fillRect(this.#mousePosition.x, this.#mousePosition.y, Tile.SIZE, Tile.SIZE);
     }
 }

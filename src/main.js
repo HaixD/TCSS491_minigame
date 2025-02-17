@@ -1,13 +1,16 @@
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
 /** @typedef {import("./engine/scenemanager")} */
-/** @typedef {import("./game-objects/camera")} */
 /** @typedef {import("./game-objects/user")} */
 
 async function main() {
-    document.querySelector("#brushes > *:first-child").onclick();
+    document.querySelector("#tiles > *:first-child").onclick();
 
     await AssetManager.getImage("/images/dirt.png");
+    await AssetManager.getImage("/images/dirt_stair_BL.png");
+    await AssetManager.getImage("/images/dirt_stair_BR.png");
+    await AssetManager.getImage("/images/dirt_stair_TL.png");
+    await AssetManager.getImage("/images/dirt_stair_TR.png");
 
     /** @type {HTMLCanvasElement} */
     const canvas = document.getElementById("gameWorld");
@@ -20,17 +23,15 @@ async function main() {
     GameEngine.createScene("main", scene => {
         // make game objects
         const user = new User(
-            new InstanceVector(Room.SIZE / 2, Room.SIZE / 2),
+            new InstanceVector(Chunk.SIZE / 2, Chunk.SIZE / 2),
             new Vector(-canvas.width / 2, -canvas.height / 2)
         );
 
-        scene.addLayer("NULL");
         scene.addLayer("ui");
-        scene.addLayer("room");
+        scene.addLayer("tile");
+        scene.addLayer("user");
 
-        GameMap.init();
-
-        scene.addGameObject("NULL", user);
+        scene.addGameObject("user", user);
         scene.addGameObject("ui", new GridUI());
 
         scene.setOffset(user.cameraPosition);

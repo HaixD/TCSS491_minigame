@@ -1,89 +1,80 @@
-/** @typedef {import("./game-objects/room")} */
-/** @typedef {import("./game-objects/add-room-button")} */
+/** @typedef {import("./game-objects/chunk")} */
+/** @typedef {import("./engine/types/boundary")} */
 
 class GameMap {
-    /** @type {{[row: string]: {[col: string]: Room}}} */
-    static #rooms = {};
-    /** @type {{[row: string]: {[col: string]: AddRoomButton}}} */
-    static #addRoomButtons = {};
+    /** @type {{[x: string]: {[y: string]: Chunk}}} */
+    static #chunks = {};
+    static #bounds = new Boundary(Infinity, -Infinity, Infinity, -Infinity);
+    static #hasPlayer = false;
 
     constructor() {
         throw new Error("GameMap is a static class and should not have any instances");
     }
 
-    static init() {
-        GameMap.addRoom(0, 0, new Room(0, 0));
+    static setTile(x, y, tile) {
+        if (x > this.#bounds.right) this.#bounds.right = x;
+        if (x < this.#bounds.left) this.#bounds.left = x;
+        if (y > this.#bounds.bottom) this.#bounds.bottom = y;
+        if (y < this.#bounds.top) this.#bounds.top = y;
+
+        const chunkX = Math.floor(x / Chunk.SIZE) * Chunk.SIZE;
+        const chunkY = Math.floor(y / Chunk.SIZE) * Chunk.SIZE;
+
+        const chunk = this.#getChunk(chunkX, chunkY);
+
+        chunk.setTile(x, y, tile);
+    }
+
+    static asArray() {
+        const shape = this.#bounds
+            .asShape()
+            .multiply(1 / 48)
+            .map(Math.ceil)
+            .add(1, 1);
+        console.log(shape.toString());
+
+        /** @type {number[][]} */
+        const map = Array(shape.x)
+            .fill(0)
+            .map(() =>
+                Array(shape.y)
+                    .fill(0)
+                    .map(() => Tile.AIR)
+            );
+        for (const col of Object.values(this.#chunks)) {
+            for (const chunk of Object.values(col)) {
+                for (const { x, y, tile } of chunk.getTiles()) {
+                    const xIndex = Math.floor((x - this.#bounds.left) / 48);
+                    const yIndex = Math.floor((y - this.#bounds.top) / 48);
+                    map[xIndex][yIndex] = tile;
+                }
+            }
+        }
+
+        return map;
     }
 
     /**
-     * @param {number} row
-     * @param {number} col
-     * @param {Room} room
+     * @param {Chunk} chunk
      */
-    static addRoom(row, col, room) {
-        const oldRoom = GameMap.getRoom(row, col);
-        const button = GameMap.#getAddRoomButton(row, col);
+    static #addChunk(chunk) {
+        this.#chunks[chunk.position.x] ||= {};
+        this.#chunks[chunk.position.x][chunk.position.y] = chunk;
 
-        if (oldRoom !== null) {
-            throw new Error(`Room already exists for row: ${row}, col: ${col}`);
-        }
-        if (button !== null) {
-            button.triggerDelete();
-        }
-
-        this.#rooms[row] ||= {};
-        this.#rooms[row][col] = room;
-
-        GameEngine.addGameObject("room", room);
-        GameMap.#addRoomButton(row - 1, col);
-        GameMap.#addRoomButton(row + 1, col);
-        GameMap.#addRoomButton(row, col - 1);
-        GameMap.#addRoomButton(row, col + 1);
+        GameEngine.addGameObject("tile", chunk);
     }
 
     /**
-     * @param {number} row
-     * @param {number} col
+     * @param {number} chunkX
+     * @param {number} chunkY
      */
-    static getRoom(row, col) {
-        if (this.#rooms[row] === undefined || this.#rooms[row][col] === undefined) {
-            return null;
+    static #getChunk(chunkX, chunkY) {
+        if (this.#chunks[chunkX] === undefined || this.#chunks[chunkX][chunkY] === undefined) {
+            const chunk = new Chunk(new Vector(chunkX, chunkY));
+            this.#addChunk(chunk);
+            return chunk;
         }
 
-        return this.#rooms[row][col];
-    }
-
-    /**
-     * @param {number} row
-     * @param {number} col
-     */
-    static #getAddRoomButton(row, col) {
-        if (
-            this.#addRoomButtons[row] === undefined ||
-            this.#addRoomButtons[row][col] === undefined
-        ) {
-            return null;
-        }
-
-        return this.#addRoomButtons[row][col];
-    }
-
-    /**
-     * @param {number} row
-     * @param {number} col
-     */
-    static #addRoomButton(row, col) {
-        const oldButton = GameMap.#getAddRoomButton(row, col);
-        const room = GameMap.getRoom(row, col);
-        if (oldButton !== null || room !== null) {
-            return;
-        }
-
-        const button = new AddRoomButton(row, col);
-
-        this.#addRoomButtons[row] ||= {};
-        this.#addRoomButtons[row][col] = button;
-
-        GameEngine.addGameObject("room", button);
+        return this.#chunks[chunkX][chunkY];
     }
 }

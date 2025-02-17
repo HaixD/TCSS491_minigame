@@ -1,6 +1,20 @@
-/** @typedef {import("./Tile")} */
+/** @typedef {import("./tile")} */
 
 class GridUI extends GameObject {
+    /**
+     * @param {number} value
+     */
+    static toGridValue(value) {
+        return Math.floor(value / Tile.SIZE);
+    }
+
+    /**
+     * @param {Vector} position
+     */
+    static toGridPosition(position) {
+        return position.map(GridUI.toGridValue);
+    }
+
     getBoundary() {
         return new Boundary(-Infinity, Infinity, -Infinity, Infinity);
     }
