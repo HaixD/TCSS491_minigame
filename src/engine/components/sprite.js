@@ -115,7 +115,6 @@ class Sprite {
     /**
      * Draws the animation on to the canvas
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      * @param {Spritesheet} animation
      */
     #drawAnimation(ctx, animation) {

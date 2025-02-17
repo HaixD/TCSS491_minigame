@@ -6,54 +6,18 @@
         <style>
             body {
                 min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                background-color: #21143d;
+                display: grid;
+                place-items: center;
                 margin: 0;
-                gap: 20px;
+                overflow: hidden;
             }
-            .controls-container {
-                padding-bottom: 20px;
-                display: flex;
-                gap: 20px;
-                align-items: center;
-                color: white;
-            }
-            .control-group {
-                display: flex;
-                align-items: center;
-                gap: 8px;
+
+            canvas {
+                margin-top: calc((100vh - 1080px) / 2);
+                margin-right: calc((100vw - 1920px) / 2);
             }
         </style>
     </head>
-    <body>
-        <div style="display: grid; grid-template-areas: 'overlap'; contain: paint">
-            <canvas
-                id="gameWorld"
-                width="1719"
-                height="951"
-                style="background: white; grid-area: overlap"
-                tabindex="0"
-                autofocus
-            >
-            </canvas>
-            <div
-                style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    grid-area: overlap;
-                    color: white;
-                    pointer-events: none;
-                "
-            >
-                <!-- GUI -->
-            </div>
-        </div>
-    </body>
-
     <!-- Game Engine Types -->
     <script type="text/javascript" src="./src/engine/util.js"></script>
     <script type="text/javascript" src="./src/engine/types/vector.js"></script>
@@ -86,5 +50,10 @@
     <script type="text/javascript" src="./src/stair.js"></script>
     <script type="text/javascript" src="./src/stair-controller.js"></script>
     <script type="text/javascript" src="./src/player.js"></script>
+
+    <body>
+        <canvas id="gameWorld" width="1920" height="1080" tabindex="0" autofocus> </canvas>
+    </body>
+
     <script type="text/javascript" src="./src/main.js"></script>
 </html>
