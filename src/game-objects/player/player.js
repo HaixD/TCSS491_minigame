@@ -1,15 +1,19 @@
-/** @typedef {import("./engine/types/game-object")} */
-/** @typedef {import("./engine/components/sprite")} */
-/** @typedef {import("./engine/components/falling-player-controller")} */
-/** @typedef {import("./engine/util")} */
-/** @typedef {import("./engine/assetmanager")} */
-/** @typedef {import("./engine/gameengine")} */
+/** @typedef {import("../../engine/types/game-object")} */
+/** @typedef {import("../../engine/components/sprite")} */
+/** @typedef {import("../../engine/components/falling-player-controller")} */
+/** @typedef {import("../../engine/util")} */
+/** @typedef {import("../../engine/assetmanager")} */
+/** @typedef {import("../../engine/gameengine")} */
+/** @typedef {import("../../engine/types/instance-vector")} */
+/** @typedef {import("../../engine/types/game-object")} */
 
 class Player extends GameObject {
     static TYPE_ID = Symbol(Player.name);
 
     static #scale = 4.99;
     static #shape = new Vector(12, 24);
+    static #scaledShape = Player.#shape.multiply(Player.#scale);
+    static #scaledHalfShape = Player.#scaledShape.multiply(0.5);
 
     /**
      * @param {InstanceVector} position
@@ -19,12 +23,12 @@ class Player extends GameObject {
 
         this.position = position;
 
-        const playerShape = Player.#shape.multiply(Player.#scale);
+        this.attackState = new AttackState();
         this.collider = new ColliderRect(
             this,
             this.position,
             new Vector(),
-            new Vector(playerShape.x, playerShape.y),
+            Player.#scaledShape,
             Obstacle.TYPE_ID
         );
         this.controller = new FallingPlayerController(
@@ -38,8 +42,8 @@ class Player extends GameObject {
             2000,
             0,
             2000,
-            1000,
-            700
+            0,
+            0
         );
         this.sprite = new Sprite(this.position, {
             run: new Spritesheet(
@@ -51,7 +55,6 @@ class Player extends GameObject {
                 0.5
             ),
         });
-        this.sprite.setState("run");
 
         this.lastBlockedDirections = FallingPlayerController.BLOCK_DIRECTION.NO_BLOCK;
     }
@@ -61,49 +64,44 @@ class Player extends GameObject {
      * @returns {Boundary | null}
      */
     getBoundary() {
-        const shape = Player.#shape.multiply(Player.#scale);
-
         return new Boundary(
             this.position.x,
-            this.position.x + shape.x,
+            this.position.x + Player.#scaledShape.x,
             this.position.y,
-            this.position.y + shape.y
+            this.position.y + Player.#scaledShape.y
         );
     }
 
     /**
-     * @override
      * @param {number} deltaTime
      * @param {InputEvents} events
      */
     update(deltaTime, events) {
         super.update(deltaTime, events);
-
         const table = FallingPlayerController.BLOCK_DIRECTION;
+        const attackState = this.attackState.updateState(events);
 
-        this.#handleExtraEvents(events);
-        const desiredDirection = this.#getOffset(events);
-
-        let displacement = this.controller.updateAll(
+        // movement
+        const displacement = this.controller.updateAll(
             deltaTime,
-            desiredDirection,
+            this.#getOffset(events),
             this.lastBlockedDirections
         );
         this.position.add(displacement);
-
         const adjustment = this.collider.resolveCollisions(displacement);
         this.position.add(adjustment);
 
-        // compute last blocked directions with a 1 update delay (so things match up visually)
         this.lastBlockedDirections = table.NO_BLOCK;
         this.lastBlockedDirections |= table.LEFT * (adjustment.x > 0);
         this.lastBlockedDirections |= table.RIGHT * (adjustment.x < 0);
         this.lastBlockedDirections |= table.ABOVE * (adjustment.y > 0);
         this.lastBlockedDirections |= table.BELOW * (adjustment.y < 0);
 
+        // update components
         this.sprite.incrementTimeline(deltaTime);
-        this.sprite.setHorizontalFlip(this.controller.velocity.x < 0);
-        this.sprite.rotation += deltaTime;
+        this.sprite.setHorizontalFlip(
+            events.worldMousePosition.x < this.position.x + Player.#scaledHalfShape.x
+        );
     }
 
     /**
@@ -117,34 +115,8 @@ class Player extends GameObject {
         this.sprite.drawSprite(ctx);
 
         // debugging
-        this.collider.drawCollider(ctx);
-        this.sprite.drawOutline(ctx);
-    }
-
-    /**
-     * @param {InputEvents} events
-     */
-    #handleExtraEvents(events) {
-        if (events.leftClick !== null) {
-            const difference = this.position
-                .asVector()
-                .add(this.collider.shape.multiply(0.5))
-                .subtract(events.worldMousePosition)
-                .multiply(5);
-            this.controller.velocity.add(difference);
-        }
-        if (events.scroll) {
-            const sceneNumber = events.scroll > 0 ? 1 : 2;
-            GameEngine.setScene(`scene${sceneNumber}`);
-        }
-
-        const scene = GameEngine.getActiveScene();
-        if (events.keys["="]) {
-            scene.scale += 0.05;
-        }
-        if (events.keys["-"]) {
-            scene.scale = Math.max(0.05, scene.scale - 0.05);
-        }
+        // this.collider.drawCollider(ctx);
+        // this.sprite.drawOutline(ctx);
     }
 
     /**

@@ -1,4 +1,4 @@
-/** @typedef {import("./engine/types/game-object")} */
+/** @typedef {import("../engine/types/game-object")} */
 
 class Obstacle extends GameObject {
     static TYPE_ID = Symbol(Obstacle.name);

@@ -3,7 +3,7 @@
 /** @typedef {import("./engine/scenemanager")} */
 /** @typedef {import("./engine/components/collider-rect")} */
 /** @typedef {import("./engine/components/position")} */
-/** @typedef {import("./player")} */
+/** @typedef {import("./game-objects/player")} */
 /** @typedef {import("./game-objects/interpolated-camera")} */
 
 async function main() {

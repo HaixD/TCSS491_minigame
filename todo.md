@@ -11,6 +11,10 @@
 - attack (skills, combos), dodge, and parry system
 - ensure game works with higher quality assets
 # Currently Unnecessary Todos
+- split dodges into parts
+    - invincibility period (from all attacks)
+    - dash attack period (starts after dodge start)
+    - dodge counter period (starts after the last attack)
 - consider `GameObject.isType(TYPE_ID)`
 - consider making some factory/builder class to make top, middle, and bottom colliders
 - if the player is the exact height as the bottom boundary of the obstacle above it, jumping causes you to glitch/phase
