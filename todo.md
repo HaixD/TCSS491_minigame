@@ -1,14 +1,15 @@
 # Short-Term Todos
 - player controller which ignores all input to play an animation
 - maximize use of `Vector` instead of separate `x` and `y` variables
-- temporary `ColliderRect` for attacks
-    - ColliderRect.scan to check colliders within an area instead of making a ColliderRect
 - make camera only follow player horizontally (fixed vertical position)
 - dummy enemy (no ai, just takes damage)
 - fix documentation
 - staircase class which automatically adds a bunch of obstacles
 # Long-Term Todos
 - attack (skills, combos), dodge, and parry system
+- animation state that works along side attack states
+    - animations dictate when attack states can change (finish x% of animation before state change)
+    - attacks dictate when animations change (change animation if state changes from attack #1 to attack #2)
 - ensure game works with higher quality assets
 # Currently Unnecessary Todos
 - split dodges into parts
