@@ -1,8 +1,6 @@
 # Short-Term Todos
 - player controller which ignores all input to play an animation
 - maximize use of `Vector` instead of separate `x` and `y` variables
-- temporary `ColliderRect` for attacks
-    - ColliderRect.scan to check colliders within an area instead of making a ColliderRect
 - make camera only follow player horizontally (fixed vertical position)
 - dummy enemy (no ai, just takes damage)
 - fix documentation
