@@ -83,7 +83,7 @@ class ColliderRect {
 
             if (
                 this !== collider &&
-                this.collisionTargets.has(collider.parent.constructor.TYPE_ID) &&
+                this.collisionTargets.has(collider.parent.getTypeID()) &&
                 this.collidesWith(collider)
             ) {
                 yield collider;

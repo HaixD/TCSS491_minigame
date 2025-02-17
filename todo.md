@@ -7,7 +7,6 @@
 - dummy enemy (no ai, just takes damage)
 - fix documentation
 - staircase class which automatically adds a bunch of obstacles
-- replace all `obj.constructor.TYPE_ID with obj.getTypeID()`
 # Long-Term Todos
 - attack (skills, combos), dodge, and parry system
 - ensure game works with higher quality assets
