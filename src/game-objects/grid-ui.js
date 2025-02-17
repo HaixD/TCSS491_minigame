@@ -8,10 +8,9 @@ class GridUI extends GameObject {
     /**
      * Draws this Game Object on to the canvas
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    draw(ctx, offset) {
-        super.draw(ctx, offset);
+    draw(ctx) {
+        super.draw(ctx);
 
         ctx.save();
 
@@ -28,8 +27,8 @@ class GridUI extends GameObject {
         for (let x = left; x <= right; x += Tile.SIZE) {
             ctx.beginPath();
 
-            ctx.moveTo(x - offset.x, viewBounds.top - offset.y);
-            ctx.lineTo(x - offset.x, viewBounds.bottom - offset.y);
+            ctx.moveTo(x, viewBounds.top);
+            ctx.lineTo(x, viewBounds.bottom);
 
             ctx.stroke();
         }
@@ -37,8 +36,8 @@ class GridUI extends GameObject {
         for (let y = top; y <= bottom; y += Tile.SIZE) {
             ctx.beginPath();
 
-            ctx.moveTo(viewBounds.left - offset.x, y - offset.y);
-            ctx.lineTo(viewBounds.right - offset.x, y - offset.y);
+            ctx.moveTo(viewBounds.left, y);
+            ctx.lineTo(viewBounds.right, y);
 
             ctx.stroke();
         }

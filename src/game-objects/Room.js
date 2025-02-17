@@ -1,4 +1,4 @@
-/** @typedef {import("./Tile")} */
+/** @typedef {import("./tile")} */
 
 class Room extends GameObject {
     static TILE_SIZE = 16;
@@ -71,27 +71,21 @@ class Room extends GameObject {
     /**
      * Draws this Game Object on to the canvas
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    draw(ctx, offset) {
-        super.draw(ctx, offset);
+    draw(ctx) {
+        super.draw(ctx);
 
         ctx.save();
 
         ctx.lineWidth = 2;
 
-        const position = this.position.subtract(offset);
+        const position = this.position;
         ctx.strokeRect(position.x, position.y, Room.SIZE, Room.SIZE);
 
         this.#tiles.forEach((row, r) =>
             row.forEach((tile, c) => {
-                switch (tile) {
-                    case Tile.DIRT:
-                        Tile.DIRT_IMAGE.then(image => {
-                            ctx.drawImage(image, position.x, position.y, 48, 48);
-                        });
-                        break;
-                }
+                const tilePosition = position.add(new Vector(c, r).multiply(Tile.SIZE));
+                Tile.drawTile(tile, ctx, tilePosition);
             })
         );
 
@@ -99,6 +93,7 @@ class Room extends GameObject {
             const { x: tileX, y: tileY } = position.add(
                 this.#mouseTilePosition.multiply(Tile.SIZE)
             );
+            ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
             ctx.fillRect(tileX, tileY, Tile.SIZE, Tile.SIZE);
         }
 

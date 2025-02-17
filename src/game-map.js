@@ -1,5 +1,5 @@
-/** @typedef {import("./Room")} */
-/** @typedef {import("./add-room-button")} */
+/** @typedef {import("./game-objects/room")} */
+/** @typedef {import("./game-objects/add-room-button")} */
 
 class GameMap {
     /** @type {{[row: string]: {[col: string]: Room}}} */

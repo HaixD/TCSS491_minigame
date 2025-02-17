@@ -1,10 +1,12 @@
 /** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./engine/assetmanager")} */
 /** @typedef {import("./engine/scenemanager")} */
-/** @typedef {import("./game-objects/Camera")} */
-/** @typedef {import("./game-objects/User")} */
+/** @typedef {import("./game-objects/camera")} */
+/** @typedef {import("./game-objects/user")} */
 
 async function main() {
+    await AssetManager.getImage("/images/dirt.png");
+
     /** @type {HTMLCanvasElement} */
     const canvas = document.getElementById("gameWorld");
     const ctx = canvas.getContext("2d");
@@ -15,8 +17,10 @@ async function main() {
 
     GameEngine.createScene("main", scene => {
         // make game objects
-        const user = new User(new InstanceVector(Room.SIZE / 2, Room.SIZE / 2));
-        const camera = new Camera(user.position, new Vector(-canvas.width / 2, -canvas.height / 2));
+        const user = new User(
+            new InstanceVector(Room.SIZE / 2, Room.SIZE / 2),
+            new Vector(-canvas.width / 2, -canvas.height / 2)
+        );
 
         scene.addLayer("NULL");
         scene.addLayer("ui");
@@ -25,10 +29,9 @@ async function main() {
         GameMap.init();
 
         scene.addGameObject("NULL", user);
-        scene.addGameObject("NULL", camera);
         scene.addGameObject("ui", new GridUI());
 
-        scene.setOffset(camera.position);
+        scene.setOffset(user.cameraPosition);
     });
 
     // start

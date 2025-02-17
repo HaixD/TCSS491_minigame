@@ -43,18 +43,16 @@ class AddRoomButton extends GameObject {
     /**
      * Draws this Game Object on to the canvas
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    draw(ctx, offset) {
-        super.draw(ctx, offset);
+    draw(ctx) {
+        super.draw(ctx);
 
         if (this.#mouseOver) {
             ctx.save();
 
             ctx.lineWidth = 2;
 
-            const { x, y } = this.position.subtract(offset);
-            ctx.strokeRect(x, y, Room.SIZE, Room.SIZE);
+            ctx.strokeRect(this.position.x, this.position.y, Room.SIZE, Room.SIZE);
 
             ctx.restore();
         }
