@@ -5,14 +5,13 @@
 /** @typedef {import("./game-objects/User")} */
 
 async function main() {
-    const TILE_SIZE = 16 * 3;
-    const ROOM_SIZE = 16 * TILE_SIZE;
-
     /** @type {HTMLCanvasElement} */
     const canvas = document.getElementById("gameWorld");
     const ctx = canvas.getContext("2d");
     GameEngine.init(ctx);
+
     ctx.imageSmoothingEnabled = false;
+    ctx.translate(-0.5, -0.5);
 
     GameEngine.createScene("main", scene => {
         // make game objects
@@ -21,8 +20,12 @@ async function main() {
 
         GameMap.init();
 
+        scene.addLayer("NULL");
+        scene.addLayer("ui");
+
         scene.addGameObject("NULL", user);
         scene.addGameObject("NULL", camera);
+        scene.addGameObject("ui", new GridUI());
 
         scene.setOffset(camera.position);
     });

@@ -24,12 +24,20 @@ class User extends GameObject {
     update(deltaTime, events) {
         super.update(deltaTime, events);
 
+        const scene = GameEngine.getActiveScene();
+
+        // tile placement
         if (events.mouseDown & 0b10) {
             if (this.#lastRightPosition === null) {
                 this.#lastRightPosition = events.canvasMousePosition.asVector();
             } else {
                 const currentMousePosition = events.canvasMousePosition.asVector();
-                this.position.add(currentMousePosition.subtract(this.#lastRightPosition).negate());
+                this.position.add(
+                    currentMousePosition
+                        .subtract(this.#lastRightPosition)
+                        .negate()
+                        .multiply(1 / scene.scale)
+                );
                 this.#lastRightPosition = currentMousePosition;
             }
         } else {

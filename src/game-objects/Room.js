@@ -1,4 +1,4 @@
-/** @typedef {import("./tile")} */
+/** @typedef {import("./Tile")} */
 
 class Room extends GameObject {
     static TILE_SIZE = 16;
@@ -30,7 +30,7 @@ class Room extends GameObject {
             .map(() =>
                 Array(Room.TILE_SIZE)
                     .fill(0)
-                    .map(() => Tile.TYPE.AIR)
+                    .map(() => Tile.AIR)
             );
     }
 
@@ -52,7 +52,7 @@ class Room extends GameObject {
             this.#mouseTilePosition = new Vector(col, row);
 
             if (events.mouseDown === 1) {
-                this.#tiles[row][col] = Tile.TYPE.DIRT;
+                this.#tiles[row][col] = Tile.DIRT;
             }
         } else {
             this.#mouseTilePosition = null;
@@ -88,7 +88,7 @@ class Room extends GameObject {
                 const tilePosition = position.add(new Vector(c, r).multiply(Tile.SIZE));
 
                 switch (tile) {
-                    case Tile.TYPE.DIRT:
+                    case Tile.DIRT:
                         ctx.fillRect(tilePosition.x, tilePosition.y, Tile.SIZE, Tile.SIZE);
                         break;
                 }

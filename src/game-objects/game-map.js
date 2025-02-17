@@ -1,4 +1,4 @@
-/** @typedef {import("./room")} */
+/** @typedef {import("./Room")} */
 /** @typedef {import("./add-room-button")} */
 
 class GameMap {
