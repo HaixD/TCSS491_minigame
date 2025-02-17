@@ -19,7 +19,7 @@ class Scene {
         this.#offset = new InstanceVector();
         this.#gameObjects = {};
         this.#nextLayerID = {};
-        this.scale = 0.5;
+        this.scale = 1;
     }
 
     /**
