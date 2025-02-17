@@ -81,6 +81,8 @@ class Player extends GameObject {
         const table = FallingPlayerController.BLOCK_DIRECTION;
         const attackState = this.attackState.updateState(events);
 
+        console.log(attackState);
+
         // movement
         const displacement = this.controller.updateAll(
             deltaTime,
