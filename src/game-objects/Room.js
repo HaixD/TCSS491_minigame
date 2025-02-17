@@ -85,11 +85,11 @@ class Room extends GameObject {
 
         this.#tiles.forEach((row, r) =>
             row.forEach((tile, c) => {
-                const tilePosition = position.add(new Vector(c, r).multiply(Tile.SIZE));
-
                 switch (tile) {
                     case Tile.DIRT:
-                        ctx.fillRect(tilePosition.x, tilePosition.y, Tile.SIZE, Tile.SIZE);
+                        Tile.DIRT_IMAGE.then(image => {
+                            ctx.drawImage(image, position.x, position.y, 48, 48);
+                        });
                         break;
                 }
             })

@@ -18,10 +18,11 @@ async function main() {
         const user = new User(new InstanceVector(Room.SIZE / 2, Room.SIZE / 2));
         const camera = new Camera(user.position, new Vector(-canvas.width / 2, -canvas.height / 2));
 
-        GameMap.init();
-
         scene.addLayer("NULL");
         scene.addLayer("ui");
+        scene.addLayer("room");
+
+        GameMap.init();
 
         scene.addGameObject("NULL", user);
         scene.addGameObject("NULL", camera);
