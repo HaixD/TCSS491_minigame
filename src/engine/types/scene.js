@@ -19,6 +19,7 @@ class Scene {
         this.#offset = new InstanceVector();
         this.#gameObjects = {};
         this.#nextLayerID = {};
+        this.scale = 0.5;
     }
 
     /**
@@ -68,12 +69,18 @@ class Scene {
      * @returns the view Boundary
      */
     getViewBounds() {
-        return new Boundary(
-            this.#offset.x,
-            this.#offset.x + this.ctx.canvas.width,
-            this.#offset.y,
-            this.#offset.y + this.ctx.canvas.height
-        );
+        const { width, height } = this.ctx.canvas;
+
+        const inverseScale = 1 / this.scale;
+        const scaledWidth = width * inverseScale;
+        const scaledHeight = height * inverseScale;
+
+        const left = this.#offset.x + width / 2 - scaledWidth / 2;
+        const right = left + scaledWidth;
+        const top = this.#offset.y + height / 2 - scaledHeight / 2;
+        const bottom = top + scaledHeight;
+
+        return new Boundary(left, right, top, bottom);
     }
 
     /**
@@ -100,6 +107,17 @@ class Scene {
         if (isNaN(this.#offset.x) || isNaN(this.#offset.y)) {
             throw new Error("Invalid offset (either offset.x or offset.y is NaN)");
         }
+
+        this.ctx.save();
+
+        const { width, height } = this.ctx.canvas;
+
+        const translationRight = ((1 - this.scale) * width) / 2;
+        const translationDown = ((1 - this.scale) * height) / 2;
+        this.ctx.translate(translationRight, translationDown);
+
+        this.ctx.scale(this.scale, this.scale);
+
         const viewBounds = this.getViewBounds();
         for (const layer of Object.values(this.#gameObjects)) {
             for (const gameObject of Object.values(layer)) {
@@ -111,9 +129,12 @@ class Scene {
                 ) {
                     continue;
                 }
+
                 gameObject.draw(this.ctx, this.#offset.asVector());
             }
         }
+
+        this.ctx.restore();
     }
 
     /**
