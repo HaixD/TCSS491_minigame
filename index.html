@@ -3,21 +3,44 @@
     <head>
         <meta charset="utf-8" />
         <title>Map Editor</title>
-        <style>
-            body {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                background-color: #21143d;
-                margin: 0;
-                gap: 20px;
-            }
-        </style>
+        <link rel="stylesheet" href="./src/styles/global.css" />
+        <link rel="stylesheet" href="./src/styles/gui.css" />
     </head>
     <body>
-        <div style="display: grid; grid-template-areas: 'overlap'; contain: paint">
+        <!-- Game Engine Types -->
+        <script type="text/javascript" src="./src/engine/util.js"></script>
+        <script type="text/javascript" src="./src/engine/types/vector.js"></script>
+        <script type="text/javascript" src="./src/engine/types/instance-vector.js"></script>
+        <script type="text/javascript" src="./src/engine/types/boundary.js"></script>
+        <script type="text/javascript" src="./src/engine/types/input-events.js"></script>
+        <script type="text/javascript" src="./src/engine/types/game-object.js"></script>
+        <script type="text/javascript" src="./src/engine/types/scene.js"></script>
+        <script type="text/javascript" src="./src/engine/types/spritesheet.js"></script>
+
+        <!-- Game Engine -->
+        <script type="text/javascript" src="./src/engine/gameengine.js"></script>
+        <script type="text/javascript" src="./src/engine/assetmanager.js"></script>
+
+        <!-- Components -->
+        <script type="text/javascript" src="./src/engine/components/point.js"></script>
+        <script type="text/javascript" src="./src/engine/components/sprite.js"></script>
+        <script type="text/javascript" src="./src/engine/components/collider-rect.js"></script>
+        <script type="text/javascript" src="./src/engine/components/physics-entity.js"></script>
+        <script
+            type="text/javascript"
+            src="./src/engine/components/falling-player-controller.js"
+        ></script>
+
+        <!-- Game Content -->
+        <script type="text/javascript" src="./src/game-objects/tile.js"></script>
+        <script type="text/javascript" src="./src/game-objects/room.js"></script>
+        <script type="text/javascript" src="./src/game-objects/add-room-button.js"></script>
+        <script type="text/javascript" src="./src/game-objects/grid-ui.js"></script>
+        <script type="text/javascript" src="./src/game-objects/user.js"></script>
+        <script type="text/javascript" src="./src/game-map.js"></script>
+        <script type="text/javascript" src="./src/gui.js"></script>
+
+        <div class="overlap-container">
             <canvas
                 id="gameWorld"
                 width="1920"
@@ -27,51 +50,20 @@
                 autofocus
             >
             </canvas>
-            <div
-                style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    grid-area: overlap;
-                    color: white;
-                    pointer-events: none;
-                "
-            >
-                <!-- GUI -->
+            <div class="overlap-item" id="gui-container">
+                <div id="toolbar">
+                    <h1>Brushes</h1>
+                    <hr />
+                    <div id="brushes">
+                        <div class="brush" onclick="GUI.selectTile(this, Tile.DIRT)">
+                            <img src="/images/dirt.png" />
+                        </div>
+                        <div class="brush" onclick="GUI.selectTile(this, Tile.AIR)"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>
 
-    <!-- Game Engine Types -->
-    <script type="text/javascript" src="./src/engine/util.js"></script>
-    <script type="text/javascript" src="./src/engine/types/vector.js"></script>
-    <script type="text/javascript" src="./src/engine/types/instance-vector.js"></script>
-    <script type="text/javascript" src="./src/engine/types/boundary.js"></script>
-    <script type="text/javascript" src="./src/engine/types/input-events.js"></script>
-    <script type="text/javascript" src="./src/engine/types/game-object.js"></script>
-    <script type="text/javascript" src="./src/engine/types/scene.js"></script>
-    <script type="text/javascript" src="./src/engine/types/spritesheet.js"></script>
-
-    <!-- Game Engine -->
-    <script type="text/javascript" src="./src/engine/gameengine.js"></script>
-    <script type="text/javascript" src="./src/engine/assetmanager.js"></script>
-
-    <!-- Components -->
-    <script type="text/javascript" src="./src/engine/components/point.js"></script>
-    <script type="text/javascript" src="./src/engine/components/sprite.js"></script>
-    <script type="text/javascript" src="./src/engine/components/collider-rect.js"></script>
-    <script type="text/javascript" src="./src/engine/components/physics-entity.js"></script>
-    <script
-        type="text/javascript"
-        src="./src/engine/components/falling-player-controller.js"
-    ></script>
-
-    <!-- Game Content -->
-    <script type="text/javascript" src="./src/game-objects/tile.js"></script>
-    <script type="text/javascript" src="./src/game-objects/room.js"></script>
-    <script type="text/javascript" src="./src/game-objects/add-room-button.js"></script>
-    <script type="text/javascript" src="./src/game-objects/grid-ui.js"></script>
-    <script type="text/javascript" src="./src/game-objects/user.js"></script>
-    <script type="text/javascript" src="./src/game-map.js"></script>
     <script type="text/javascript" src="./src/main.js"></script>
 </html>

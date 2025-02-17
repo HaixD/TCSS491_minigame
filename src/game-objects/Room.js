@@ -52,7 +52,8 @@ class Room extends GameObject {
             this.#mouseTilePosition = new Vector(col, row);
 
             if (events.mouseDown === 1) {
-                this.#tiles[row][col] = Tile.DIRT;
+                console.log(GUI.getTile());
+                this.#tiles[row][col] = GUI.getTile();
             }
         } else {
             this.#mouseTilePosition = null;

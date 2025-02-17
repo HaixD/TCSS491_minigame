@@ -5,6 +5,8 @@
 /** @typedef {import("./game-objects/user")} */
 
 async function main() {
+    document.querySelector("#brushes > *:first-child").onclick();
+
     await AssetManager.getImage("/images/dirt.png");
 
     /** @type {HTMLCanvasElement} */

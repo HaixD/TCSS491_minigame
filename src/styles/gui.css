@@ -1,0 +1,53 @@
+.brush {
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+    padding: 0.3rem;
+    height: 3rem;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+    backdrop-filter: blur(1px);
+    border: 2px solid #444444;
+    transition: all ease-in-out 0.1s;
+
+    img {
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+    }
+
+    &:hover {
+        background-color: #1f1f1f;
+        border-color: white;
+    }
+
+    &.selected {
+        /* background-color: #b2d9ffcc; */
+        border-color: #3d9eff;
+        padding: 0.5rem;
+    }
+}
+
+#gui-container {
+    pointer-events: none;
+}
+
+#toolbar {
+    background-color: rgba(0, 0, 0, 0.9);
+
+    backdrop-filter: blur(2px);
+    color: white;
+    pointer-events: all;
+    margin: 2rem 2rem 0 auto;
+    width: 17rem;
+    height: calc(100% - 4rem);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+#brushes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    row-gap: 0.5rem;
+}
