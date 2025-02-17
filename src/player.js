@@ -2,6 +2,7 @@
 /** @typedef {import("./engine/components/sprite")} */
 /** @typedef {import("./engine/components/falling-player-controller")} */
 /** @typedef {import("./engine/util")} */
+/** @typedef {import("./engine/gameengine")} */
 /** @typedef {import("./stair-controller")} */
 
 class Player extends GameObject {
@@ -92,9 +93,6 @@ class Player extends GameObject {
 
         const table = FallingPlayerController.BLOCK_DIRECTION;
 
-        if (events.mouseDown !== 0) {
-            console.log(events.mouseDown);
-        }
         this.#handleExtraEvents(events);
         const desiredDirection = this.#getOffset(events);
 
@@ -148,6 +146,14 @@ class Player extends GameObject {
         if (events.scroll) {
             const sceneNumber = events.scroll > 0 ? 1 : 2;
             GameEngine.setScene(`scene${sceneNumber}`);
+        }
+
+        const scene = GameEngine.getActiveScene();
+        if (events.keys["="]) {
+            scene.scale += 0.05;
+        }
+        if (events.keys["-"]) {
+            scene.scale = Math.max(0.05, scene.scale - 0.05);
         }
     }
 

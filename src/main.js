@@ -40,10 +40,6 @@ async function main() {
             "front",
             new Obstacle(new InstanceVector(1000, -1000), new Vector(20, 1200))
         );
-        // scene.addGameObject(
-        //     "front",
-        //     new Obstacle(new InstanceVector(-1000, -1000), new Vector(20, 1200))
-        // );
 
         scene.addGameObject("front", new Obstacle(new InstanceVector(0, 100), new Vector(50, 50)));
         scene.addGameObject("front", new Obstacle(new InstanceVector(-50, 0), new Vector(50, 50)));
