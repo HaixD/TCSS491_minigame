@@ -27,6 +27,9 @@ class Scene {
      * @param {string} layer
      */
     addLayer(layer) {
+        if (layer in this.#gameObjects) {
+            throw new Error("Layer already exists");
+        }
         this.#gameObjects[layer] = {};
         this.#nextLayerID[layer] = 0;
     }
