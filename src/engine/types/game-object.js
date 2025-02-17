@@ -64,9 +64,8 @@ class GameObject {
     /**
      * Draws this Game Object on to the canvas
      * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
      */
-    draw(ctx, offset) {
+    draw(ctx) {
         this.#drawReady = false;
     }
 }

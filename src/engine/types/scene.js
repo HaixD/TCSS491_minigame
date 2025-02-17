@@ -118,8 +118,8 @@ class Scene {
         const translationRight = ((1 - this.scale) * width) / 2;
         const translationDown = ((1 - this.scale) * height) / 2;
         this.ctx.translate(translationRight, translationDown);
-
         this.ctx.scale(this.scale, this.scale);
+        this.ctx.translate(-this.#offset.x, -this.#offset.y);
 
         const viewBounds = this.getViewBounds();
         for (const layer of Object.values(this.#gameObjects)) {
@@ -133,7 +133,7 @@ class Scene {
                     continue;
                 }
 
-                gameObject.draw(this.ctx, this.#offset.asVector());
+                gameObject.draw(this.ctx);
             }
         }
 
