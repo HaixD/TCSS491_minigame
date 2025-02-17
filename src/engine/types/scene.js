@@ -142,6 +142,8 @@ class Scene {
      * @param {Vector} screenVector vector of sceen position (not in world)
      */
     getWorldVector(screenVector) {
-        return this.#offset.asVector().add(screenVector);
+        const { left, top } = this.getViewBounds();
+
+        return screenVector.multiply(1 / this.scale).add(left, top);
     }
 }
