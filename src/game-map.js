@@ -4,34 +4,34 @@
 class GameMap {
     /** @type {{[x: string]: {[y: string]: Chunk}}} */
     static #chunks = {};
-    static #bounds = new Boundary(Infinity, -Infinity, Infinity, -Infinity);
-    static #hasPlayer = false;
 
     constructor() {
         throw new Error("GameMap is a static class and should not have any instances");
     }
 
     static setTile(x, y, tile) {
-        if (x > this.#bounds.right) this.#bounds.right = x;
-        if (x < this.#bounds.left) this.#bounds.left = x;
-        if (y > this.#bounds.bottom) this.#bounds.bottom = y;
-        if (y < this.#bounds.top) this.#bounds.top = y;
-
         const chunkX = Math.floor(x / Chunk.SIZE) * Chunk.SIZE;
         const chunkY = Math.floor(y / Chunk.SIZE) * Chunk.SIZE;
 
-        const chunk = this.#getChunk(chunkX, chunkY);
+        if (tile === Tile.AIR && !this.#hasChunk(chunkX, chunkY)) {
+            return;
+        }
 
+        const chunk = this.#getChunk(chunkX, chunkY);
         chunk.setTile(x, y, tile);
+
+        if (chunk.isEmpty()) {
+            this.#deleteChunk(chunkX, chunkY);
+            console.log(this.#chunks);
+        }
     }
 
     static asArray() {
-        const shape = this.#bounds
+        const shape = bounds
             .asShape()
             .multiply(1 / 48)
             .map(Math.ceil)
             .add(1, 1);
-        console.log(shape.toString());
 
         /** @type {number[][]} */
         const map = Array(shape.x)
@@ -44,14 +44,30 @@ class GameMap {
         for (const col of Object.values(this.#chunks)) {
             for (const chunk of Object.values(col)) {
                 for (const { x, y, tile } of chunk.getTiles()) {
-                    const xIndex = Math.floor((x - this.#bounds.left) / 48);
-                    const yIndex = Math.floor((y - this.#bounds.top) / 48);
+                    const xIndex = Math.floor((x - bounds.left) / 48);
+                    const yIndex = Math.floor((y - bounds.top) / 48);
                     map[xIndex][yIndex] = tile;
                 }
             }
         }
 
         return map;
+    }
+
+    static clear() {
+        for (const chunk of this.#getChunks()) {
+            chunk.triggerDelete();
+        }
+
+        this.#chunks = {};
+    }
+
+    static *#getChunks() {
+        for (const col of Object.values(this.#chunks)) {
+            for (const chunk of Object.values(col)) {
+                yield chunk;
+            }
+        }
     }
 
     /**
@@ -69,12 +85,26 @@ class GameMap {
      * @param {number} chunkY
      */
     static #getChunk(chunkX, chunkY) {
-        if (this.#chunks[chunkX] === undefined || this.#chunks[chunkX][chunkY] === undefined) {
+        if (!this.#hasChunk(chunkX, chunkY)) {
             const chunk = new Chunk(new Vector(chunkX, chunkY));
             this.#addChunk(chunk);
             return chunk;
         }
 
         return this.#chunks[chunkX][chunkY];
+    }
+
+    static #hasChunk(chunkX, chunkY) {
+        return chunkX in this.#chunks && chunkY in this.#chunks[chunkX];
+    }
+
+    static #deleteChunk(chunkX, chunkY) {
+        if (this.#hasChunk(chunkX, chunkY)) {
+            this.#chunks[chunkX][chunkY].triggerDelete();
+            delete this.#chunks[chunkX][chunkY];
+            if (Object.keys(this.#chunks[chunkX]).length === 0) {
+                delete this.#chunks[chunkX];
+            }
+        }
     }
 }

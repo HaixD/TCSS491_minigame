@@ -1,4 +1,5 @@
 /** @typedef {import("./tile")} */
+/** @typedef {import("../engine/types/game-object")} */
 
 class Chunk extends GameObject {
     static TILE_SIZE = 16;
@@ -25,12 +26,20 @@ class Chunk extends GameObject {
         this.#tiles = {};
     }
 
-    setTile(x, y, tile) {
-        if (this.#tiles[x] === undefined) {
-            this.#tiles[x] = {};
-        }
+    isEmpty() {
+        return Object.keys(this.#tiles).length === 0;
+    }
 
-        this.#tiles[x][y] = tile;
+    setTile(x, y, tile) {
+        if (tile === Tile.AIR) {
+            this.#deleteTile(x, y);
+        } else {
+            if (this.#tiles[x] === undefined) {
+                this.#tiles[x] = {};
+            }
+
+            this.#tiles[x][y] = tile;
+        }
     }
 
     *getTiles() {
@@ -54,6 +63,15 @@ class Chunk extends GameObject {
 
         for (const { x, y, tile } of this.getTiles()) {
             Tile.drawTile(tile, ctx, new Vector(x, y));
+        }
+    }
+
+    #deleteTile(x, y) {
+        if (x in this.#tiles && y in this.#tiles[x]) {
+            delete this.#tiles[x][y];
+            if (Object.keys(this.#tiles[x]).length === 0) {
+                delete this.#tiles[x];
+            }
         }
     }
 }

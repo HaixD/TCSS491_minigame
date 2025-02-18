@@ -38,6 +38,7 @@
         <script type="text/javascript" src="./src/game-objects/grid-ui.js"></script>
         <script type="text/javascript" src="./src/game-objects/user.js"></script>
         <script type="text/javascript" src="./src/game-map.js"></script>
+        <script type="text/javascript" src="./src/map-export.js"></script>
 
         <div class="overlap-container">
             <canvas
@@ -122,12 +123,24 @@
                     <div>
                         <h1>Export</h1>
                         <div id="export" class="tool-group">
-                            <div id="download" class="tool-button" onclick="GUI.saveMap()">
-                                Download (.js)
+                            <div id="download-json" class="tool-button" onclick="GUI.saveMap()">
+                                Download (.json)
                             </div>
-                            <div id="download" class="tool-button" onclick="GUI.saveMap()">
-                                Download (.json) <br />
-                                (NA)
+                        </div>
+                    </div>
+                    <hr />
+                    <div>
+                        <h1>Import</h1>
+                        <div id="import" class="tool-group">
+                            <div id="import-input" class="tool-button">
+                                <label for="import-json">Import (.json)</label>
+                                <input
+                                    id="import-json"
+                                    class="tool-button"
+                                    type="file"
+                                    accept="application/json"
+                                    onchange="GUI.loadMap()"
+                                />
                             </div>
                         </div>
                     </div>

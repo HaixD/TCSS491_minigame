@@ -1,4 +1,5 @@
 /** @typedef {import("./game-objects/tile")} */
+/** @typedef {import("./game-map")} */
 
 class GUI {
     static #selectedTile = Tile.AIR;
@@ -25,16 +26,35 @@ class GUI {
     }
 
     static saveMap() {
-        const blob = new Blob([`const TILES = ${JSON.stringify(GameMap.asArray())}`], {
-            type: "text/javascript",
+        const blob = new Blob([JSON.stringify(new MapExport(GameMap.asArray()), null, 4)], {
+            type: "application/json",
         });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "map.js";
+        link.download = "map.json";
         link.style.display = "none";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(link.href);
+    }
+
+    static loadMap() {
+        /** @type {HTMLInputElement} */
+        const element = document.getElementById("import-json");
+        element.files[0].text().then(json => {
+            GameMap.clear();
+
+            /** @type {MapExport} */
+            const { data } = JSON.parse(json);
+
+            for (let x = 0; x < data.length; x++) {
+                for (let y = 0; y < data[0].length; y++) {
+                    const tile = data[x][y];
+
+                    GameMap.setTile(x * Tile.SIZE, y * Tile.SIZE, tile);
+                }
+            }
+        });
     }
 }
