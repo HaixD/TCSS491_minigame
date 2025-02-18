@@ -41,8 +41,38 @@ async function main() {
             new Obstacle(new InstanceVector(1000, -1000), new Vector(20, 1200))
         );
 
-        scene.addGameObject("front", new Obstacle(new InstanceVector(0, 100), new Vector(50, 50)));
-        scene.addGameObject("front", new Obstacle(new InstanceVector(-50, 0), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(500, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(550, 0), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(550, 50), new Vector(50, 50)));
+
+        scene.addGameObject("front", new Obstacle(new InstanceVector(-50, 50), new Vector(50, 50)));
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-100, 50), new Vector(50, 50))
+        );
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-150, 50), new Vector(50, 50))
+        );
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-200, 50), new Vector(50, 50))
+        );
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-250, 50), new Vector(50, 50))
+        );
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-300, 50), new Vector(50, 50))
+        );
+        scene.addGameObject("front", new Obstacle(new InstanceVector(0, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(50, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(100, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(150, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(200, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(250, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(300, 50), new Vector(50, 50)));
 
         for (let i = 0; i < 10; ++i) {
             scene.addGameObject(

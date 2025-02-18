@@ -37,17 +37,15 @@ class StairController {
     #resolveCollisions(displacement, collisions) {
         let stairFound = false;
 
-        const adjustment = new InstanceVector();
         for (const collider of collisions) {
             if (collider.parent.getTypeID() === Stair.TYPE_ID) {
                 stairFound = true;
             }
-            adjustment.add(this.snapUpCollider.resolveCollision(displacement, collider));
         }
 
         this.#stairMode = stairFound;
 
-        return adjustment.asVector();
+        return this.snapUpCollider.resolveCollisionsWith(displacement, collisions);
     }
 
     /**

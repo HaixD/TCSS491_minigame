@@ -130,7 +130,7 @@ class Player extends GameObject {
 
         this.sprite.incrementTimeline(deltaTime);
         this.sprite.setHorizontalFlip(this.controller.velocity.x < 0);
-        this.sprite.rotation += deltaTime;
+        // this.sprite.rotation += deltaTime;
     }
 
     /**
