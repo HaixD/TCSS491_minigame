@@ -6,11 +6,11 @@
 async function main() {
     document.querySelector("#tiles > *:first-child").onclick();
 
-    await AssetManager.getImage("/images/dirt.png");
-    await AssetManager.getImage("/images/dirt_stair_BL.png");
-    await AssetManager.getImage("/images/dirt_stair_BR.png");
-    await AssetManager.getImage("/images/dirt_stair_TL.png");
-    await AssetManager.getImage("/images/dirt_stair_TR.png");
+    await AssetManager.getImage("images/dirt.png");
+    await AssetManager.getImage("images/dirt_stair_BL.png");
+    await AssetManager.getImage("images/dirt_stair_BR.png");
+    await AssetManager.getImage("images/dirt_stair_TL.png");
+    await AssetManager.getImage("images/dirt_stair_TR.png");
 
     /** @type {HTMLCanvasElement} */
     const canvas = document.getElementById("gameWorld");

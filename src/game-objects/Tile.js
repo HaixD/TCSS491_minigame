@@ -31,19 +31,19 @@ class Tile {
             case Tile.AIR:
                 break;
             case Tile.DIRT:
-                ctx.drawImage(AssetManager.getImage("/images/dirt.png"), ...args);
+                ctx.drawImage(AssetManager.getImage("images/dirt.png"), ...args);
                 break;
             case Tile.DIRT_STAIR_BL:
-                ctx.drawImage(AssetManager.getImage("/images/dirt_stair_BL.png"), ...args);
+                ctx.drawImage(AssetManager.getImage("images/dirt_stair_BL.png"), ...args);
                 break;
             case Tile.DIRT_STAIR_BR:
-                ctx.drawImage(AssetManager.getImage("/images/dirt_stair_BR.png"), ...args);
+                ctx.drawImage(AssetManager.getImage("images/dirt_stair_BR.png"), ...args);
                 break;
             case Tile.DIRT_STAIR_TL:
-                ctx.drawImage(AssetManager.getImage("/images/dirt_stair_TL.png"), ...args);
+                ctx.drawImage(AssetManager.getImage("images/dirt_stair_TL.png"), ...args);
                 break;
             case Tile.DIRT_STAIR_TR:
-                ctx.drawImage(AssetManager.getImage("/images/dirt_stair_TR.png"), ...args);
+                ctx.drawImage(AssetManager.getImage("images/dirt_stair_TR.png"), ...args);
                 break;
             default:
                 throw new Error(`Received unrecognized tile: ${tile}`);
