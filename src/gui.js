@@ -26,7 +26,7 @@ class GUI {
     }
 
     static saveMap() {
-        const blob = new Blob([JSON.stringify(new MapExport(GameMap.asArray()), null, 4)], {
+        const blob = new Blob([JSON.stringify(GameMap.export())], {
             type: "application/json",
         });
         const link = document.createElement("a");
@@ -43,18 +43,7 @@ class GUI {
         /** @type {HTMLInputElement} */
         const element = document.getElementById("import-json");
         element.files[0].text().then(json => {
-            GameMap.clear();
-
-            /** @type {MapExport} */
-            const { data } = JSON.parse(json);
-
-            for (let x = 0; x < data.length; x++) {
-                for (let y = 0; y < data[0].length; y++) {
-                    const tile = data[x][y];
-
-                    GameMap.setTile(x * Tile.SIZE, y * Tile.SIZE, tile);
-                }
-            }
+            GameMap.import(JSON.parse(json));
         });
     }
 }

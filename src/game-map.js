@@ -26,32 +26,46 @@ class GameMap {
         }
     }
 
-    static asArray() {
+    static export() {
+        const bounds = this.#getBounds();
         const shape = bounds
             .asShape()
-            .multiply(1 / 48)
+            .multiply(1 / Tile.SIZE)
             .map(Math.ceil)
             .add(1, 1);
-
-        /** @type {number[][]} */
-        const map = Array(shape.x)
+        const tiles = Array(shape.x)
             .fill(0)
             .map(() =>
                 Array(shape.y)
                     .fill(0)
                     .map(() => Tile.AIR)
             );
-        for (const col of Object.values(this.#chunks)) {
-            for (const chunk of Object.values(col)) {
-                for (const { x, y, tile } of chunk.getTiles()) {
-                    const xIndex = Math.floor((x - bounds.left) / 48);
-                    const yIndex = Math.floor((y - bounds.top) / 48);
-                    map[xIndex][yIndex] = tile;
-                }
-            }
+
+        for (const { x, y, tile } of this.getTiles()) {
+            const xIndex = Math.floor((x - bounds.left) / Tile.SIZE);
+            const yIndex = Math.floor((y - bounds.top) / Tile.SIZE);
+            tiles[xIndex][yIndex] = tile;
         }
 
-        return map;
+        return new MapExport(bounds.top, bounds.left, tiles);
+    }
+
+    /**
+     * @param {MapExport} mapExport
+     */
+    static import(mapExport) {
+        this.clear();
+
+        const { top, left, tiles } = mapExport;
+
+        for (let xIndex = 0; xIndex < tiles.length; xIndex++) {
+            for (let yIndex = 0; yIndex < tiles[0].length; yIndex++) {
+                const x = left + xIndex * Tile.SIZE;
+                const y = top + yIndex * Tile.SIZE;
+
+                this.setTile(x, y, tiles[xIndex][yIndex]);
+            }
+        }
     }
 
     static clear() {
@@ -67,6 +81,12 @@ class GameMap {
             for (const chunk of Object.values(col)) {
                 yield chunk;
             }
+        }
+    }
+
+    static *getTiles() {
+        for (const chunk of this.#getChunks()) {
+            yield* chunk.getTiles();
         }
     }
 
@@ -106,5 +126,18 @@ class GameMap {
                 delete this.#chunks[chunkX];
             }
         }
+    }
+
+    static #getBounds() {
+        const bounds = new Boundary(Infinity, -Infinity, Infinity, -Infinity);
+
+        for (const { x, y } of this.getTiles()) {
+            bounds.left = Math.min(bounds.left, x);
+            bounds.right = Math.max(bounds.right, x);
+            bounds.top = Math.min(bounds.top, y);
+            bounds.bottom = Math.max(bounds.bottom, y);
+        }
+
+        return bounds;
     }
 }
