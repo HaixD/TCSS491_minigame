@@ -171,48 +171,49 @@ class ColliderRect {
      */
     resolveCollisionsWith(displacement, collisions) {
         const selfBounds = this.getBoundary();
-        const originalbounds = selfBounds.copy();
-        let neededDisplacement = new InstanceVector();
 
-        const otherBounds = [];
+        const boundaries = [];
+        const xAdjustmentSet = new Set([0]);
+        const yAdjustmentSet = new Set([0]);
+        for (const collider of collisions) {
+            const boundary = collider.getBoundary();
+            boundaries.push(boundary);
 
-        for (let i = 0; i < collisions.length; i++) {
-            otherBounds.push(collisions[i].getBoundary());
-            if (selfBounds.containsBoundary(otherBounds[i])) {
-                const adjustment = selfBounds.resolveCollision(displacement, otherBounds[i]);
+            const adjustment = selfBounds.resolveCollision(displacement, boundary);
+            if (adjustment.x === 0 && adjustment.y === 0) {
+                continue;
+            }
+            xAdjustmentSet.add(adjustment.x);
+            yAdjustmentSet.add(adjustment.y);
+        }
 
+        let bestAdjustment = new Vector();
+        let bestMagnitude = Infinity;
+        for (const xAdjustment of xAdjustmentSet) {
+            for (const yAdjustment of yAdjustmentSet) {
+                const adjustment = new Vector(xAdjustment, yAdjustment);
                 selfBounds.move(adjustment);
-                neededDisplacement.add(adjustment);
+
+                let collided = false;
+                for (const boundary of boundaries) {
+                    if (selfBounds.containsBoundary(boundary)) {
+                        collided = true;
+                        break;
+                    }
+                }
+
+                if (!collided) {
+                    const magnitude = adjustment.getMagnitude();
+                    if (magnitude < bestMagnitude) {
+                        bestAdjustment = adjustment;
+                        bestMagnitude = magnitude;
+                    }
+                }
+
+                selfBounds.move(adjustment.negate());
             }
         }
 
-        let noXMoveNeeded = true;
-        originalbounds.move(new Vector(0, neededDisplacement.y));
-        for (let i = 0; i < collisions.length; i++) {
-            if (originalbounds.containsBoundary(otherBounds[i])) {
-                originalbounds.move(new Vector(0, -neededDisplacement.y));
-                noXMoveNeeded = false;
-                break;
-            }
-        }
-
-        let noYMoveNeeded = true;
-        originalbounds.move(new Vector(neededDisplacement.x, 0));
-        for (let i = 0; i < collisions.length; i++) {
-            if (originalbounds.containsBoundary(otherBounds[i])) {
-                originalbounds.move(new Vector(-neededDisplacement.x, 0));
-                noYMoveNeeded = false;
-                break;
-            }
-        }
-
-        if (noXMoveNeeded) {
-            neededDisplacement.x = 0;
-        }
-        if (noYMoveNeeded) {
-            // neededDisplacement.y = 0;
-        }
-
-        return neededDisplacement.asVector();
+        return bestAdjustment;
     }
 }

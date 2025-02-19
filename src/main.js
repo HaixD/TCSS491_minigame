@@ -73,6 +73,9 @@ async function main() {
         scene.addGameObject("front", new Obstacle(new InstanceVector(200, 50), new Vector(50, 50)));
         scene.addGameObject("front", new Obstacle(new InstanceVector(250, 50), new Vector(50, 50)));
         scene.addGameObject("front", new Obstacle(new InstanceVector(300, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(350, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(400, 50), new Vector(50, 50)));
+        scene.addGameObject("front", new Obstacle(new InstanceVector(450, 50), new Vector(50, 50)));
 
         for (let i = 0; i < 10; ++i) {
             scene.addGameObject(

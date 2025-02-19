@@ -141,13 +141,13 @@ class Player extends GameObject {
     draw(ctx) {
         super.draw(ctx);
 
-        this.sprite.drawSprite(ctx);
+        // this.sprite.drawSprite(ctx);
 
         // debugging
         this.topCollider.drawCollider(ctx);
         this.middleCollider.drawCollider(ctx);
-        this.sprite.drawOutline(ctx);
-        this.bottomCollider.drawCollider(ctx);
+        // this.sprite.drawOutline(ctx);
+        // this.bottomCollider.drawCollider(ctx);
     }
 
     /**

@@ -83,25 +83,6 @@ class Boundary {
      * @param {Boundary} other
      * @returns the displacement this Boundary needs to not be in collision
      */
-    resolveYCollision(displacement, other) {
-        const ERROR = 0.5;
-
-        const verticalDifference = Math.max(
-            0,
-            displacement.y > 0
-                ? this.bottom - other.top
-                : displacement.y < 0
-                ? other.bottom - this.top
-                : 0
-        );
-    }
-
-    /**
-     * Resolves the collision of this Boundary with the other (other Boundary treated as immovable)
-     * @param {Vector} displacement
-     * @param {Boundary} other
-     * @returns the displacement this Boundary needs to not be in collision
-     */
     resolveCollision(displacement, other) {
         const ERROR = 0.01;
 
