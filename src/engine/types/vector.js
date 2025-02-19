@@ -129,22 +129,4 @@ class Vector {
     toString() {
         return `Vector(x=${this.x}, y=${this.y})`;
     }
-
-    /**
-     * Draws this vector to the canvas as a lime colored 10px square (the center of that square is exactly where this Vector is)
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {Vector} offset
-     */
-    draw(ctx, offset) {
-        const SIZE = 10;
-
-        const position = this.subtract(offset);
-
-        ctx.save();
-
-        ctx.fillStyle = "lime";
-        ctx.fillRect(position.x - SIZE / 2, position.y - SIZE / 2, 10, 10);
-
-        ctx.restore();
-    }
 }
