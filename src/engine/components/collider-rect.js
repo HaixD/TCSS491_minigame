@@ -83,7 +83,7 @@ class ColliderRect {
 
             if (
                 this !== collider &&
-                this.collisionTargets.has(collider.parent.constructor.TYPE_ID) &&
+                this.collisionTargets.has(collider.parent.getTypeID()) &&
                 this.collidesWith(collider)
             ) {
                 yield collider;
@@ -119,7 +119,7 @@ class ColliderRect {
      * @returns The bounds of this ColliderRect
      */
     getBoundary() {
-        const start = this.position.asVector().add(this.offset);
+        const start = this.offset.add(this.position);
         const end = start.add(this.shape);
 
         return new Boundary(start.x, end.x, start.y, end.y);
@@ -152,54 +152,7 @@ class ColliderRect {
      * @returns the displacement this ColliderRect needs to not be in collision
      */
     resolveCollision(displacement, other) {
-        const ERROR = 0.01;
-
-        const otherBounds = other.getBoundary();
-        const selfBounds = this.getBoundary();
-
-        const horizontalDifference = Math.max(
-            0,
-            displacement.x > 0
-                ? selfBounds.right - otherBounds.left
-                : displacement.x < 0
-                ? otherBounds.right - selfBounds.left
-                : 0
-        );
-        const verticalDifference = Math.max(
-            0,
-            displacement.y > 0
-                ? selfBounds.bottom - otherBounds.top
-                : displacement.y < 0
-                ? otherBounds.bottom - selfBounds.top
-                : 0
-        );
-
-        const direction = displacement.normalize().negate();
-        const tHorizontal = Math.abs(horizontalDifference / direction.x);
-        const tVertical = Math.abs(verticalDifference / direction.y);
-
-        const state = isNaN(tHorizontal) * 0b10 + isNaN(tVertical) * 0b1;
-        switch (state) {
-            case 0b00: {
-                const newDisplacement = direction.multiply(
-                    Math.min(tHorizontal, tVertical) + ERROR
-                );
-
-                if (tHorizontal < tVertical) {
-                    return new Vector(newDisplacement.x, 0);
-                } else if (tVertical < tHorizontal) {
-                    return new Vector(0, newDisplacement.y);
-                }
-
-                return new Vector();
-            }
-            case 0b10:
-                return direction.multiply(tVertical + ERROR);
-            case 0b01:
-                return direction.multiply(tHorizontal + ERROR);
-        }
-
-        return new Vector();
+        return this.getBoundary().resolveCollision(displacement, other.getBoundary());
     }
 
     /**
@@ -208,16 +161,18 @@ class ColliderRect {
      * @returns the displacement this ColliderRect needs to not be in collision
      */
     resolveCollisions(displacement) {
-        const collisions = this.getCollisions();
-        let neededDisplacement = new InstanceVector();
+        return this.resolveCollisionsWith(displacement, [...this.getCollisions()]);
+    }
 
-        while (true) {
-            const { value: collider, done } = collisions.next();
-            if (done) break;
-
-            neededDisplacement.add(this.resolveCollision(displacement, collider));
-        }
-
-        return neededDisplacement.asVector();
+    /**
+     * Resolves all collisions within the given array of collisions
+     * @param {Vector} displacement
+     * @param {ColliderRect[]} collisions
+     */
+    resolveCollisionsWith(displacement, collisions) {
+        return this.getBoundary().resolveCollisions(
+            displacement,
+            collisions.map(collider => collider.getBoundary())
+        );
     }
 }

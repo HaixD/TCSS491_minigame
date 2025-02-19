@@ -3,15 +3,11 @@
 class InstanceVector extends Vector {
     /**
      * @override
-     * @param {Vector | InstanceVector | number} arg1
+     * @param {Vector | InstanceVector | number | undefined} arg1
      * @param {number | undefined} arg2
      */
     constructor(arg1, arg2) {
-        if (arg1 !== undefined && arg2 === undefined) {
-            super(arg1.x, arg1.y);
-        } else {
-            super(arg1, arg2);
-        }
+        super(arg1, arg2);
     }
 
     /**
@@ -22,7 +18,11 @@ class InstanceVector extends Vector {
      */
     set(arg1, arg2) {
         if (arg2 === undefined) {
-            this.set(arg1.x, arg1.y);
+            if (typeof arg1 === "number") {
+                this.set(arg1, 0);
+            } else {
+                this.set(arg1.x, arg1.y);
+            }
         } else {
             if (isNaN(arg1) || isNaN(arg2)) {
                 throw new Error(`NaN Vector value occurred`);
@@ -79,18 +79,14 @@ class InstanceVector extends Vector {
      * Negates this Vector such that it becomes -a
      */
     negate() {
-        this.set(-this.x, this.y);
-
-        return this;
+        return this.set(super.negate());
     }
 
     /**
      * Normalizes this vector such that its magnitude becomes 1
      */
     normalize() {
-        this.set(super.normalize());
-
-        return this;
+        return this.set(super.normalize());
     }
 
     /**
@@ -98,9 +94,7 @@ class InstanceVector extends Vector {
      * @param {number} scalar
      */
     multiply(scalar) {
-        this.set(this.x * scalar, this.y * scalar);
-
-        return this;
+        return this.set(super.multiply(scalar));
     }
 
     /**
