@@ -8,6 +8,7 @@ async function main() {
 
     await AssetManager.getImage("images/player.png");
     await AssetManager.getImage("images/slasher.png");
+    await AssetManager.getImage("images/shoot_pickup.png");
 
     await AssetManager.getImage("images/dirt.png");
     await AssetManager.getImage("images/dirt_stair_BL.png");

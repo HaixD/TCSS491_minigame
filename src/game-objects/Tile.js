@@ -3,6 +3,14 @@ class Tile {
 
     static PLAYER = -1;
     static SLASHER = -2;
+    static SHOOTER = -3;
+    static BLOCKER = -4;
+
+    static SHOOT_PICKUP = -5;
+    static SLASH_PICKUP = -6;
+    static TELEPORT_PICKUP = -7;
+
+    static HEALTH_PICKUP = -8;
 
     static AIR = 0;
     static DIRT = 1;
@@ -33,6 +41,8 @@ class Tile {
                 );
                 break;
             case Tile.SLASHER:
+            case Tile.SHOOTER:
+            case Tile.BLOCKER:
                 ctx.drawImage(
                     AssetManager.getImage("images/slasher.png"),
                     position.x - 24,
@@ -40,6 +50,12 @@ class Tile {
                     96,
                     96
                 );
+                break;
+            case Tile.SHOOT_PICKUP:
+            case Tile.SLASH_PICKUP:
+            case Tile.TELEPORT_PICKUP:
+            case Tile.HEALTH_PICKUP:
+                ctx.drawImage(AssetManager.getImage("images/shoot_pickup.png"), ...blockArgs);
                 break;
             case Tile.AIR:
                 break;
