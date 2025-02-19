@@ -119,7 +119,7 @@ class ColliderRect {
      * @returns The bounds of this ColliderRect
      */
     getBoundary() {
-        const start = this.position.asVector().add(this.offset);
+        const start = this.offset.add(this.position);
         const end = start.add(this.shape);
 
         return new Boundary(start.x, end.x, start.y, end.y);
@@ -170,50 +170,9 @@ class ColliderRect {
      * @param {ColliderRect[]} collisions
      */
     resolveCollisionsWith(displacement, collisions) {
-        const selfBounds = this.getBoundary();
-
-        const boundaries = [];
-        const xAdjustmentSet = new Set([0]);
-        const yAdjustmentSet = new Set([0]);
-        for (const collider of collisions) {
-            const boundary = collider.getBoundary();
-            boundaries.push(boundary);
-
-            const adjustment = selfBounds.resolveCollision(displacement, boundary);
-            if (adjustment.x === 0 && adjustment.y === 0) {
-                continue;
-            }
-            xAdjustmentSet.add(adjustment.x);
-            yAdjustmentSet.add(adjustment.y);
-        }
-
-        let bestAdjustment = new Vector();
-        let bestMagnitude = Infinity;
-        for (const xAdjustment of xAdjustmentSet) {
-            for (const yAdjustment of yAdjustmentSet) {
-                const adjustment = new Vector(xAdjustment, yAdjustment);
-                selfBounds.move(adjustment);
-
-                let collided = false;
-                for (const boundary of boundaries) {
-                    if (selfBounds.containsBoundary(boundary)) {
-                        collided = true;
-                        break;
-                    }
-                }
-
-                if (!collided) {
-                    const magnitude = adjustment.getMagnitude();
-                    if (magnitude < bestMagnitude) {
-                        bestAdjustment = adjustment;
-                        bestMagnitude = magnitude;
-                    }
-                }
-
-                selfBounds.move(adjustment.negate());
-            }
-        }
-
-        return bestAdjustment;
+        return this.getBoundary().resolveCollisions(
+            displacement,
+            collisions.map(collider => collider.getBoundary())
+        );
     }
 }

@@ -80,26 +80,26 @@ class Boundary {
     /**
      * Resolves the collision of this Boundary with the other (other Boundary treated as immovable)
      * @param {Vector} displacement
-     * @param {Boundary} other
+     * @param {Boundary} boundary
      * @returns the displacement this Boundary needs to not be in collision
      */
-    resolveCollision(displacement, other) {
+    resolveCollision(displacement, boundary) {
         const ERROR = 0.01;
 
         const horizontalDifference = Math.max(
             0,
             displacement.x > 0
-                ? this.right - other.left
+                ? this.right - boundary.left
                 : displacement.x < 0
-                ? other.right - this.left
+                ? boundary.right - this.left
                 : 0
         );
         const verticalDifference = Math.max(
             0,
             displacement.y > 0
-                ? this.bottom - other.top
+                ? this.bottom - boundary.top
                 : displacement.y < 0
-                ? other.bottom - this.top
+                ? boundary.bottom - this.top
                 : 0
         );
 
@@ -129,5 +129,49 @@ class Boundary {
         }
 
         return new Vector();
+    }
+
+    resolveCollisions(displacement, boundaries) {
+        const xAdjustmentSet = new Set([0]);
+        const yAdjustmentSet = new Set([0]);
+        for (const boundary of boundaries) {
+            const adjustment = this.resolveCollision(displacement, boundary);
+            if (adjustment.x === 0 && adjustment.y === 0) {
+                continue;
+            }
+            xAdjustmentSet.add(adjustment.x);
+            yAdjustmentSet.add(adjustment.y);
+        }
+
+        let bestAdjustment = new Vector();
+        let bestMagnitude = Infinity;
+        for (const xAdjustment of xAdjustmentSet) {
+            for (const yAdjustment of yAdjustmentSet) {
+                const adjustment = new Vector(xAdjustment, yAdjustment);
+                this.move(adjustment);
+
+                if (!this.#hasCollision(boundaries)) {
+                    const magnitude = adjustment.getMagnitude();
+                    if (magnitude < bestMagnitude) {
+                        bestAdjustment = adjustment;
+                        bestMagnitude = magnitude;
+                    }
+                }
+
+                this.move(adjustment.negate());
+            }
+        }
+
+        return bestAdjustment;
+    }
+
+    #hasCollision(boundaries) {
+        for (const boundary of boundaries) {
+            if (this.containsBoundary(boundary)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
