@@ -95,6 +95,10 @@ async function main() {
                 )
             );
         }
+        scene.addGameObject(
+            "front",
+            new Obstacle(new InstanceVector(-1100 - 40, 0), new Vector(40, 20))
+        );
 
         scene.addGameObject(
             "front",
