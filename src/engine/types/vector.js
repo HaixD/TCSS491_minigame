@@ -69,6 +69,23 @@ class Vector {
     }
 
     /**
+     * Checks if this Vector equals the given Vector
+     * @param {Vector | number} arg1
+     * @param {number | undefined} arg2
+     */
+    equals(arg1, arg2) {
+        if (arg2 === undefined) {
+            if (typeof arg1 === "number") {
+                return this.equals(arg1, 0);
+            } else {
+                return this.equals(arg1.x, arg1.y);
+            }
+        }
+
+        return this.x === arg1 && this.y === arg2;
+    }
+
+    /**
      * Negates this vector and returns -a where a is this Vector
      * @returns a new Vector object
      */
