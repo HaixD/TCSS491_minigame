@@ -13,7 +13,7 @@ class AssetManager {
      * @param {string} path
      * @returns {Promise<HTMLAudioElement> | HTMLAudioElement} a (loaded) Audio object
      */
-    static async getAudio(path) {
+    static getAudio(path) {
         if (AssetManager.#audioData[path] !== undefined) {
             return AssetManager.#audioData[path];
         }
