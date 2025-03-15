@@ -77,24 +77,6 @@ async function main() {
         scene.addGameObject("front", new Obstacle(new InstanceVector(400, 50), new Vector(50, 50)));
         scene.addGameObject("front", new Obstacle(new InstanceVector(450, 50), new Vector(50, 50)));
 
-        for (let i = 0; i < 10; ++i) {
-            scene.addGameObject(
-                "front",
-                new Stair(
-                    new InstanceVector(-700 - 40 * i, 200 - 20 * i),
-                    new Vector(40, 20),
-                    Stair.DIRECTION.LEFT
-                )
-            );
-            scene.addGameObject(
-                "front",
-                new Stair(
-                    new InstanceVector(-2000 - 40 * i, 200 - 40 * i),
-                    new Vector(40, 40),
-                    Stair.DIRECTION.LEFT
-                )
-            );
-        }
         scene.addGameObject(
             "front",
             new Obstacle(new InstanceVector(-1100 - 40, 0), new Vector(40, 20))

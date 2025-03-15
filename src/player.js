@@ -4,7 +4,6 @@
 /** @typedef {import("./engine/util")} */
 /** @typedef {import("./engine/assetmanager")} */
 /** @typedef {import("./engine/gameengine")} */
-/** @typedef {import("./stair-controller")} */
 
 class Player extends GameObject {
     static TYPE_ID = Symbol(Player.name);
@@ -21,35 +20,12 @@ class Player extends GameObject {
         this.position = position;
 
         const playerShape = Player.#shape.multiply(Player.#scale);
-        const legHeight = playerShape.y / 2;
-        const snapHeight = 40;
         this.topCollider = new ColliderRect(
             this,
             this.position,
             new Vector(),
-            new Vector(playerShape.x, playerShape.y - legHeight),
-            Obstacle.TYPE_ID,
-            Stair.TYPE_ID
-        );
-        this.middleCollider = new ColliderRect(
-            this,
-            this.position,
-            new Vector(0, playerShape.y - legHeight),
-            new Vector(playerShape.x, legHeight),
-            Obstacle.TYPE_ID,
-            Stair.TYPE_ID
-        );
-        this.bottomCollider = new ColliderRect(
-            this,
-            this.position,
-            new Vector(0, playerShape.y),
-            new Vector(playerShape.x, snapHeight),
-            Stair.TYPE_ID
-        );
-        this.stairController = new StairController(
-            this.middleCollider,
-            this.bottomCollider,
-            Infinity
+            new Vector(playerShape.x, playerShape.y),
+            Obstacle.TYPE_ID
         );
         this.controller = new FallingPlayerController(
             new Vector(750, Infinity),
@@ -118,15 +94,12 @@ class Player extends GameObject {
         const topAdjustment = this.topCollider.resolveCollisions(displacement);
         this.position.add(topAdjustment);
 
-        const stairAdjustment = this.stairController.updateState(displacement);
-        this.position.add(stairAdjustment);
-
         // compute last blocked directions with a 1 update delay (so things match up visually)
         this.lastBlockedDirections = table.NO_BLOCK;
-        this.lastBlockedDirections |= table.LEFT * (topAdjustment.x > 0 || stairAdjustment.x > 0);
-        this.lastBlockedDirections |= table.RIGHT * (topAdjustment.x < 0 || stairAdjustment.x < 0);
+        this.lastBlockedDirections |= table.LEFT * (topAdjustment.x > 0);
+        this.lastBlockedDirections |= table.RIGHT * (topAdjustment.x < 0);
         this.lastBlockedDirections |= table.ABOVE * (topAdjustment.y > 0);
-        this.lastBlockedDirections |= table.BELOW * (stairAdjustment.y < 0);
+        this.lastBlockedDirections |= table.BELOW * (topAdjustment.y < 0);
 
         this.sprite.incrementTimeline(deltaTime);
         this.sprite.setHorizontalFlip(this.controller.velocity.x < 0);
@@ -145,9 +118,7 @@ class Player extends GameObject {
 
         // debugging
         this.topCollider.drawCollider(ctx);
-        this.middleCollider.drawCollider(ctx);
         // this.sprite.drawOutline(ctx);
-        // this.bottomCollider.drawCollider(ctx);
     }
 
     /**
