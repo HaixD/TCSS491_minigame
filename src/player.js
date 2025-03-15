@@ -20,7 +20,7 @@ class Player extends GameObject {
         this.position = position;
 
         const playerShape = Player.#shape.multiply(Player.#scale);
-        this.topCollider = new ColliderRect(
+        this.collider = new ColliderRect(
             this,
             this.position,
             new Vector(),
@@ -91,7 +91,7 @@ class Player extends GameObject {
         );
         this.position.add(displacement);
 
-        const topAdjustment = this.topCollider.resolveCollisions(displacement);
+        const topAdjustment = this.collider.resolveCollisions(displacement);
         this.position.add(topAdjustment);
 
         // compute last blocked directions with a 1 update delay (so things match up visually)
@@ -117,7 +117,7 @@ class Player extends GameObject {
         // this.sprite.drawSprite(ctx);
 
         // debugging
-        this.topCollider.drawCollider(ctx);
+        this.collider.drawCollider(ctx);
         // this.sprite.drawOutline(ctx);
     }
 
@@ -130,7 +130,7 @@ class Player extends GameObject {
         if (events.leftClick !== null) {
             const difference = this.position
                 .asVector()
-                .add(this.topCollider.shape.multiply(0.5))
+                .add(this.collider.shape.multiply(0.5))
                 .subtract(GameEngine.getWorldMousePosition())
                 .multiply(5);
             this.controller.velocity.add(difference);
