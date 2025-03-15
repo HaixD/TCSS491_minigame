@@ -75,7 +75,7 @@ class InstanceVector extends Vector {
      * @param {(value: number) => number} transformation
      */
     map(transformation) {
-        return new InstanceVector(transformation(this.x), transformation(this.y));
+        return new InstanceVector(super.map(transformation));
     }
 
     /**
@@ -83,7 +83,7 @@ class InstanceVector extends Vector {
      * @param {(value: number) => number} transformation
      */
     forEach(transformation) {
-        this.set(transformation(this.x), transformation(this.y));
+        this.set(this.map(transformation));
 
         return this;
     }
