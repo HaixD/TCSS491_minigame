@@ -154,20 +154,23 @@ class Player extends GameObject {
      * @param {InputEvents} events
      */
     #handleExtraEvents(events) {
+        const scene = GameEngine.getActiveScene();
+
         if (events.leftClick !== null) {
             const difference = this.position
                 .asVector()
                 .add(this.topCollider.shape.multiply(0.5))
-                .subtract(events.worldMousePosition)
+                .subtract(GameEngine.getWorldMousePosition())
                 .multiply(5);
             this.controller.velocity.add(difference);
         }
+
         if (events.scroll) {
-            const sceneNumber = events.scroll > 0 ? 1 : 2;
-            GameEngine.setScene(`scene${sceneNumber}`);
+            // const sceneNumber = events.scroll > 0 ? 1 : 2;
+            // GameEngine.setScene(`scene${sceneNumber}`);
+            scene.scale *= Math.pow(2, -Math.sign(events.scroll));
         }
 
-        const scene = GameEngine.getActiveScene();
         if (events.keys["="]) {
             scene.scale += 0.05;
         }

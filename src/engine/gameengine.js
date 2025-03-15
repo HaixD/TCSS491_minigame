@@ -33,9 +33,6 @@ class GameEngine {
 
         GameEngine.#ctx.canvas.addEventListener("mousemove", e => {
             GameEngine.#inputEvents.canvasMousePosition.set(GameEngine.#processMouseEvent(e));
-            GameEngine.#inputEvents.worldMousePosition.set(
-                GameEngine.getActiveScene().getWorldVector(GameEngine.#processMouseEvent(e))
-            );
         });
         GameEngine.#ctx.canvas.addEventListener("click", e => {
             GameEngine.#inputEvents.leftClick = GameEngine.#processMouseEvent(e);
@@ -60,6 +57,12 @@ class GameEngine {
         GameEngine.#ctx.canvas.addEventListener("mouseup", e => {
             GameEngine.#inputEvents.mouseDown = e.buttons;
         });
+    }
+
+    static getWorldMousePosition() {
+        return GameEngine.getActiveScene().getWorldVector(
+            this.#inputEvents.canvasMousePosition.asVector()
+        );
     }
 
     static getActiveScene() {
